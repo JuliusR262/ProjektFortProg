@@ -1,5 +1,7 @@
 import Type
 
+import Pretty
+
 -- Data type for substitutions
 data Subst = Subst [(VarName, Term)]
   deriving Show
@@ -15,13 +17,11 @@ single vName term = Subst [(vName, term)]
 
 -- Applys a substitution to a term
 apply :: Subst -> Term -> Term
-apply (Subst []) term          = term
-apply (Subst (x:xs)) term = apply xs (applySingle x term)
+apply (Subst []) term     = term
+apply (Subst (x:xs)) term = apply (Subst xs) (applySingle x term)
     where applySingle :: (VarName, Term) -> Term -> Term
           applySingle (svName, sTerm) (Var destvName)
-              -- If the var name from the substitution was found, replace it with the substitution term
               | svName == destvName = sTerm
-              -- Otherwise leave the term unchanged
               | otherwise = (Var destvName)
-          -- Search for vars in every comb's sub-term
-          applySingle subst (Comb cName (x:xs)) = applySingle subst x
+          applySingle (svName, sTerm) (Comb destcName destTerm) = (Comb destcName (map (applySingle (svName, sTerm)) destTerm))
+              
