@@ -2,6 +2,7 @@ module TypeExtension () where
 
 import Type
 import Vars
+import Pretty
 
 instance Eq Term where
     (Var vName1) == (Var vName2) = vName1 == vName2
@@ -11,3 +12,6 @@ instance Eq Term where
     
     t1 /= t2 = not (t1 == t2)
 
+instance Pretty a => Pretty (Maybe a) where
+    pretty Nothing = ""
+    pretty (Just x)  = pretty x
