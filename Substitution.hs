@@ -1,3 +1,7 @@
+module Substitution (Subst(Subst),Pretty,pretty,empty,
+                                single,apply,compose,
+                                restrictTo) where
+
 import Type
 import Pretty
 import Data.List
@@ -81,8 +85,8 @@ restrictTo (v1:vs) (Subst s) = let x = (findSubst v1 (Subst s))
                                    --  (vName,sTerm) -> sTerm
                                    --  _ -> (apply (Subst xs) (Var vName))
 
-subst1 = (Subst [("A", Comb "f" [Var "B", Var "_", Comb "true" []]),("D", Comb "false" [])])
-subst2 = (Subst [("B", Comb "false" [])])
-term1 =  (Comb "." [Var "K",Comb "." [Var "L",Var "A",Var "B", Var "B"]])
+--subst1 = (Subst [("A", Comb "f" [Var "B", Var "_", Comb "true" []]),("D", Comb "false" [])])
+--subst2 = (Subst [("B", Comb "false" [])])
+--term1 =  (Comb "." [Var "K",Comb "." [Var "L",Var "A",Var "B", Var "B"]])
 
 --pretty1 = pretty (apply subst1 term1)
