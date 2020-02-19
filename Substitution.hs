@@ -1,6 +1,16 @@
 import Type
 import Pretty
 import Data.List
+import Vars
+--import TypeExtension
+
+instance Eq Term where
+    (Var vName1) == (Var vName2) = vName1 == vName2
+    (Var _) == (Comb _ _) = False
+    (Comb _ _) == (Var _) = False
+    (Comb cName1 cList1) == (Comb cName2 cList2) = cName1 == cName2 && cList1 == cList2
+    
+    t1 /= t2 = not (t1 == t2)
 
 -- Data type for substitutions
 data Subst = Subst [(VarName, Term)]
@@ -12,6 +22,10 @@ instance Pretty Subst where
         where prettyHelp :: Subst -> [String]
               prettyHelp (Subst []) = []
               prettyHelp (Subst ((svName, sTerm):xs)) = (svName ++ " -> " ++ (pretty sTerm)) : (prettyHelp (Subst xs))
+              
+instance Vars Subst where
+    allVars (Subst []) = []
+    allVars (Subst ((svName, sTerm):xs)) = svName : (allVars sTerm) ++ allVars (Subst xs)
 
 -- The empty substitution
 empty :: Subst
@@ -39,13 +53,7 @@ apply subst (Comb cName cTerm) = (Comb cName (map (apply subst) cTerm))
 --              | otherwise = (Var destvName)
 --          applySingle (svName, sTerm) (Comb destcName destTerm) = (Comb destcName (map (applySingle (svName, sTerm)) destTerm))
 
-instance Eq Term where
-    (Var vName1) == (Var vName2) = vName1 == vName2
-    (Var _) == (Comb _ _) = False
-    (Comb _ _) == (Var _) = False
-    (Comb cName1 cList1) == (Comb cName2 cList2) = cName1 == cName2 && cList1 == cList2
-    
-    t1 /= t2 = not (t1 == t2)
+
           
 compose :: Subst -> Subst -> Subst
 compose (Subst []) (Subst s1) = (Subst s1)

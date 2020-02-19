@@ -1,3 +1,5 @@
+module Pretty (Pretty, pretty) where 
+
 import Type
 import Data.List
 

@@ -1,3 +1,5 @@
+module Vars (Vars, allVars, freshVars) where
+
 import Type
 
 class Vars a where
