@@ -1,0 +1,3 @@
+- Ist die Reihenfolge von dem Tupel von ds wichtig oder kann die Variable immer an erste Stelle?
+
+- Sollen bei allVars keine Duplikate vorkommen?
