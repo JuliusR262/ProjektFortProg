@@ -9,9 +9,5 @@ instance Eq Term where
     (Var _) == (Comb _ _) = False
     (Comb _ _) == (Var _) = False
     (Comb cName1 cList1) == (Comb cName2 cList2) = cName1 == cName2 && cList1 == cList2
-    
-    t1 /= t2 = not (t1 == t2)
 
-instance Pretty a => Pretty (Maybe a) where
-    pretty Nothing = ""
-    pretty (Just x)  = pretty x
+    t1 /= t2 = not (t1 == t2)
