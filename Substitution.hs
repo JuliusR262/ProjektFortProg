@@ -1,11 +1,10 @@
 module Substitution (Subst(Subst),Pretty,pretty,empty,
                                 single,apply,compose,
                                 restrictTo) where
-
-import Type
 import Pretty
-import Data.List
 import Vars
+import Type
+import Data.List
 import TypeExtension
 
 -- Data type for substitutions
@@ -32,7 +31,7 @@ empty = Subst []
 single :: VarName -> Term -> Subst
 single vName term = Subst [(vName, term)]
 
-
+-- konkateniert zwei Subst zu einer indem die Terme konkateniert werden
 substConcat :: Subst -> Subst -> Subst
 substConcat (Subst xs) (Subst ys) = Subst (xs ++ ys)
 
@@ -44,14 +43,6 @@ apply (Subst ((svName, sTerm):xs)) (Var vName)
     | svName == vName = sTerm
     | otherwise = (apply (Subst xs) (Var vName))
 apply subst (Comb cName cTerm) = (Comb cName (map (apply subst) cTerm))
---apply (Subst []) term     = term
---apply (Subst (x:xs)) term = apply (Subst xs) (applySingle x term)
---    where applySingle :: (VarName, Term) -> Term -> Term
---          applySingle (svName, sTerm) (Var destvName)
---              | svName == destvName = sTerm
---              | otherwise = (Var destvName)
---          applySingle (svName, sTerm) (Comb destcName destTerm) = (Comb destcName (map (applySingle (svName, sTerm)) destTerm))
-
 
 -- Findet eine einzelne Substitutionsregel mit der gegebenen Variable.
 findSubst :: VarName -> Subst -> Maybe (VarName, Term)
@@ -84,21 +75,13 @@ compose (Subst (x2:s2)) (Subst (x1:s1)) = let
                                           in if (findSubst s2vName (Subst (x1:s1))) == Nothing then compose (Subst s2) (Subst (x2:(applyToAll (Subst [x2]) (x1:s1))))
                                                                                   else compose (Subst s2) (Subst (x1:s1))
 
-
+-- schränkt eine Substitution ein für eine Menge von Variablen die in der Substitution vorkommen
 restrictTo :: [VarName] -> Subst -> Subst
-restrictTo [] (Subst _) = Subst []
-restrictTo (v1:vs) (Subst s) = let x = (findSubst v1 (Subst s))
+restrictTo [] (Subst _) = Subst []  -- Fall das [VarName leer ist] oder Ende der Rekursion
+restrictTo (v1:vs) (Subst s) = let x = (findSubst v1 (Subst s)) -- sucht in findSubst nach Subst für eine gegebene Variable
                         in  case x of
-                                Just y  -> substConcat (Subst [y]) (restrictTo vs (Subst s))
-                                _       -> restrictTo vs (Subst s)
+                                Just y  -> substConcat (Subst [y]) (restrictTo vs (Subst s))  -- Fall eine Substituition gefunden :
+                                                                                              -- wird mit substConcat an die Liste der eingeschränkten SUbstitutionen angefügt
+                                _       -> restrictTo vs (Subst s)  -- Fall x = Nothing, wird verworfen und nächste Variable betrachtet
 
 
---case x of
-                                   --  (vName,sTerm) -> sTerm
-                                   --  _ -> (apply (Subst xs) (Var vName))
-
---subst1 = (Subst [("A", Comb "f" [Var "B", Var "_", Comb "true" []]),("D", Comb "false" [])])
---subst2 = (Subst [("B", Comb "false" [])])
---term1 =  (Comb "." [Var "K",Comb "." [Var "L",Var "A",Var "B", Var "B"]])
-
---pretty1 = pretty (apply subst1 term1)
