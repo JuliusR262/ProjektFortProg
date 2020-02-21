@@ -5,13 +5,8 @@ import Vars
 import Substitution
 import TypeExtension
 
--- Computes the disagreement set of two terms.
--- Case 1: Both terms are the same, so there is no disagreement.
--- Terminate with 'Nothing'.
--- Case 2: One of the two terms is a variable,
--- terminate with the variable and the term as the disagreement set.
--- Case 3: Both terms are literals.
--- Case 3.1: If both terms have different names or list lenghts, terminate
+-- Computes the disagreement and returns it in a Maybe container,
+-- or returns 'Nothing' if two terms are the same.
 ds, ds' :: Term -> Term -> Maybe (Term, Term)
 ds term1 term2 =
   if term1 == term2 then Nothing
