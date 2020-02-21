@@ -39,17 +39,32 @@ apply (Subst ((svName, sTerm):xs)) (Var vName)
     | otherwise = (apply (Subst xs) (Var vName))
 apply subst (Comb cName cTerm) = (Comb cName (map (apply subst) cTerm))
 
+
 -- Composes two substitutions into one.
 compose :: Subst -> Subst -> Subst
 compose (Subst s2) (Subst s1) = 
-  let (s1Vars, s1Terms) = unzip s1
-      s3Terms = map (apply (Subst s2)) s1Terms
-      s3 = (zip s1Vars s3Terms)
-  in Subst (s3 ++ [ (n2, t2) | (n2, t2) <- s2, (elem n2 s1Vars) == False])
-    
-    
+  let       (s1Vars, s1Terms) = unzip s1
+            s3 =  [ (n2, t2) | (n2, t2) <- s2, (elem n2 s1Vars) == False]
+  in Subst (s3 ++ [ (v1,  t) | (v1,_) <- s1, t <- map (apply (Subst s3)) s1Terms] )
+
+  
+  
 restrictTo :: [VarName] -> Subst -> Subst
 restrictTo xs (Subst ts1) = Subst [(v2Name,t) | v1Name <- xs,(v2Name,t) <- ts1,v1Name==v2Name]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -84,3 +84,60 @@
 --case x of
                                    --  (vName,sTerm) -> sTerm
                                    --  _ -> (apply (Subst xs) (Var vName))
+                                   
+                                   
+{-
+compose'' :: Subst -> Subst -> Subst
+compose'' (Subst s2) (Subst s1) = 
+     Subst ([ (v1,  t)       |  let (s1Vars, s1Terms) = unzip s1,
+                                let s3 =  [ (n2, t2) | (n2, t2) <- s2, (elem n2 s1Vars) == False],
+                               (v1,_) <- s1, 
+                                t     <- map (apply (Subst s3)) (s1Terms)])                                   
+                                   
+                                   
+ -}                                  
+
+
+
+
+{-
+
+-- Composes two substitutions into one.
+compose :: Subst -> Subst -> Subst
+compose (Subst s2) (Subst s1) = 
+  let (s1Vars, s1Terms) = unzip s1
+      s3Terms = map (apply (Subst s2)) s1Terms
+      s3 = (zip s1Vars s3Terms)
+  in Subst (s3 ++ [ (n2, t2) | (n2, t2) <- s2, (elem n2 s1Vars) == False])
+
+
+
+-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
