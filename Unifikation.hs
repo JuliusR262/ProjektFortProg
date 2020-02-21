@@ -5,27 +5,27 @@ import Vars
 import Substitution
 import TypeExtension
 
--- Liefert die Unstimmigkeitsmenge von zwei Termen.
+-- Computes the disagreement set of two terms.
+-- Case 1: Both terms are the same, so there is no disagreement.
+-- Terminate with 'Nothing'.
+-- Case 2: One of the two terms is a variable,
+-- terminate with the variable and the term as the disagreement set.
+-- Case 3: Both terms are literals.
+-- Case 3.1: If both terms have different names or list lenghts, terminate
 ds, ds' :: Term -> Term -> Maybe (Term, Term)
--- Fall 1: Die beiden Terme sind gleich, also gibt es keine Unstimmigkeit,
--- liefer 'Nothing'
 ds term1 term2 =
   if term1 == term2 then Nothing
-                    -- Prüfe die anderen Fälle, falls Fall 1 nicht auftritt.
-                    else ds' term1 term2
--- Fall 2: Einer der beiden Terme ist eine Variable,
--- terminiere mit der Variable und dem Term als Unstimmigkeit.
-ds' (Var vName1) term2 = Just ((Var vName1), term2)
-ds' term1 (Var vName2) = Just ((Var vName2), term1)
+                    else ds' term1 term2 -- Check the other cases.
+ds' (Var vName1) term2 = Just ((Var vName1), term2) -- Case 2
+ds' term1 (Var vName2) = Just ((Var vName2), term1) -- Case 2
 
 -- Fall 3: Beide Terme sind Literale.
-ds' (Comb cName1 cTerm1) (Comb cName2 cTerm2)
+ds' (Comb cName1 cTerm1) (Comb cName2 cTerm2) -- Case 3
   -- Fall 3.1: Haben die Literale andere Namen oder Listenlängen,
   -- terminiere mit den beiden Literalen als Unstimmigkeit.
-  | cName1 /= cName2 || (length cTerm1) /= (length cTerm2) =
+  | cName1 /= cName2 || (length cTerm1) /= (length cTerm2) = -- Case 3.1
     Just ((Comb cName1 cTerm1), (Comb cName2 cTerm2))
-  -- Fall 3.2:
-  | otherwise = dsAll (zip cTerm1 cTerm2)
+  | otherwise = dsAll (zip cTerm1 cTerm2) -- Case 3.2
    -- Sucht rekursiv nach einer Unstimmigkeit innerhalb der Termliste eines
    -- Literals.
    where dsAll :: [(Term, Term)] -> Maybe (Term, Term)
