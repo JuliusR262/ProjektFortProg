@@ -54,5 +54,3 @@ unify' t1 t2 sigma = case (ds (apply sigma t1) (apply sigma t2) ) of
   Just ((Var v), t) -> unify' t1 t2 ((single v t) `compose` sigma)
     
 
-ds1 = Comb "." [Var "A", Comb "g" [Var "X", Var "_"] ,Var "h(A,B)",Var "D"]
-ds2 = Comb "." [Var "A", Comb "g" [Var "X", Var "W"], Var "Z",Var "D"]

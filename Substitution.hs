@@ -50,6 +50,3 @@ compose (Subst s2) (Subst s1) =
     
 restrictTo :: [VarName] -> Subst -> Subst
 restrictTo xs (Subst ts1) = Subst [(v2Name,t) | v1Name <- xs,(v2Name,t) <- ts1,v1Name==v2Name]
-
-
-
