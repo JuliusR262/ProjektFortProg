@@ -49,6 +49,36 @@
 
 
 
+-- restrictTo :: [VarName] -> Subst -> Subst
+-- restrictTo [] (Subst _) = Subst [] 
+-- restrictTo (v1:vs) (Subst s) = let x = (findSubst v1 (Subst s))
+--                         in  case x of
+--                                Just y  -> substConcat (Subst [y]) (restrictTo vs (Subst s))  
+--                                _       -> restrictTo vs (Subst s)
+
+
+
+
+ --   (Subst ( [ (svName1, sTerm3) | (svName2, sTerm2) <- s2, (svName1, sTerm1) <- s1, s1Terms <- snd (unzip s1), sTerm3 <- (map (apply (Subst s2)) s1Term ) ] ++
+ -- [ (svName2, sTerm2) | (svName2, sTerm2) <- s2, (svName1, sTerm1) <- s1 , (lookup svName2 s1) == Nothing]))
+
+-- schränkt eine Substitution ein für eine Menge von Variablen die in der Substitution vorkommen
+
+-- concatinate two Subst to one Subst by concatinate two Terms
+--substConcat :: Subst -> Subst -> Subst
+--substConcat (Subst xs) (Subst ys) = Subst (xs ++ ys)
+
+
+-- find the single Substitution Rules by a given Variable.
+-- and returns a Maybe of Nothing or Tuple of Varname and Term
+--findSubst :: VarName -> Subst -> Maybe (VarName, Term)
+-- by empty Substitution terminate with 'Nothing'
+--findSubst _ (Subst []) = Nothing
+--findSubst vName (Subst ((s3vName, s3Term):s3))
+--                                -- terminate with Substitutionsrule if the right were found.
+--                                | vName == s3vName = Just (s3vName, s3Term)
+--                                -- otherwise searching continue in the restlist of substitutionrules.
+--                                | otherwise = findSubst vName (Subst s3)
 
 
 --case x of
