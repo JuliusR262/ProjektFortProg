@@ -11,7 +11,7 @@ import TypeExtension
 data Subst = Subst [(VarName, Term)]
   deriving Show
 
--- Pretty-Instanz für Substitutionen
+-- Pretty-inztance for Substitutions
 instance Pretty Subst where
     pretty subst = "{" ++ (intercalate ", " (prettyHelp subst))  ++ "}"
         where prettyHelp :: Subst -> [String]
@@ -31,7 +31,7 @@ empty = Subst []
 single :: VarName -> Term -> Subst
 single vName term = Subst [(vName, term)]
 
--- konkateniert zwei Subst zu einer indem die Terme konkateniert werden
+-- concatinate two Subst to one Subst by concatinate two Terms
 substConcat :: Subst -> Subst -> Subst
 substConcat (Subst xs) (Subst ys) = Subst (xs ++ ys)
 
@@ -44,18 +44,19 @@ apply (Subst ((svName, sTerm):xs)) (Var vName)
     | otherwise = (apply (Subst xs) (Var vName))
 apply subst (Comb cName cTerm) = (Comb cName (map (apply subst) cTerm))
 
--- Findet eine einzelne Substitutionsregel mit der gegebenen Variable.
+-- find the single Substitution Rules by a given Variable.
+-- and returns a Maybe of Nothing or Tuple of Varname and Term
 findSubst :: VarName -> Subst -> Maybe (VarName, Term)
--- Bei der leeren Substitution terminieren wir mit 'Nothing'
+-- by empty Substitution terminate with 'Nothing'
 findSubst _ (Subst []) = Nothing
 findSubst vName (Subst ((s3vName, s3Term):s3))
-                                -- Terminiere mit der Substitutionsregel falls die richtige gefunden wird.
+                                -- terminate with Substitutionsrule if the right were found.
                                 | vName == s3vName = Just (s3vName, s3Term)
-                                -- Ansonsten suchen wir weiter in der Restliste der Substitutionsregeln.
+                                -- otherwise searching continue in the restlist of substitutionrules.
                                 | otherwise = findSubst vName (Subst s3)
 
 
--- Komponiert zwei Substitutionen zu einer.
+-- compose two Substitutions to one single.
 compose :: Subst -> Subst -> Subst
 -- Die leere Substitution komponiert mit einer anderen Substitution
 -- liefert die andere Substitution unverändert zurück.
