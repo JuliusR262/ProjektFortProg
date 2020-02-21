@@ -6,23 +6,23 @@ import Data.List
 class Pretty a where
   pretty :: a -> String
 
--- Instanz pretty für Maybe
+-- Instanz pretty Maybe
 instance Pretty a => Pretty (Maybe a) where
   pretty Nothing = ""
   pretty (Just x)  = pretty x
 
--- Instanz pretty für Term
+-- Instanz pretty Term
 instance Pretty (Term) where
   pretty (Var vName)          = vName
   pretty (Comb cName [])      = cName
-  -- Struktur .(E,L)
+  -- structure .(E,L)
   pretty (Comb "." [t1,t2])   = case t2 of
-                                  -- Falls t2 Comb ist und leer ist
+                                  -- if t2 is Comb and empty
                                   Comb "[]" []  ->  "[" ++ pretty t1 ++ "]"
-                                  -- Falls t2 Comb ist und die Liste fortsetzt
-                                  --    nach Struktur .(E,L)
-                                  -- init und tail um zusätzliche klammern
-                                  --    wieder zu entfernen
+                                  -- if t2 is Comb ist and continue the List
+                                  --    like structure .(E,L)
+                                  -- init and tail to delete the
+                                  --    additional brackets
                                   Comb "." [t3,t4]   ->  "[" ++ pretty t1 
                                                              ++ ", " 
                                                              ++ init ( tail (
@@ -30,13 +30,12 @@ instance Pretty (Term) where
                                                               Comb "." [t3,t4]
                                                                  )))
                                                         ++ "]"
-                                  -- Wenn der zweite Term Variable ist 
-                                  --  oder die Liste nicht nach Struktur 
-                                  --    fortsetzt
+                                  -- if the second term is a variable or
+                                  -- the list doesnt continue list by structure
                                   _             ->  "[" ++ pretty t1 ++ "|" 
                                                         ++  pretty t2 ++ "]"
   
-  -- falls Liste in Comb länger ist aufgrund Struktur Liste in Prolog
+  -- if list in Comb is longer because structure list in Prolog
   pretty (Comb cName t2)      = cName ++ "(" 
                                       ++ intercalate ", " (map pretty (t2))
                                       ++ ")"
