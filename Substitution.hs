@@ -5,7 +5,6 @@ import Pretty
 import Vars
 import Type
 import Data.List
-import TypeExtension
 
 -- Data type for substitutions
 data Subst = Subst [(VarName, Term)]
@@ -56,14 +55,13 @@ findSubst vName (Subst ((s3vName, s3Term):s3))
                                 | otherwise = findSubst vName (Subst s3)
 
 
--- compose two Substitutions to one single.
+-- Composes two substitutions into one.
 compose :: Subst -> Subst -> Subst
--- Die leere Substitution komponiert mit einer anderen Substitution
--- liefert die andere Substitution unverändert zurück.
-compose (Subst s2) (Subst s1) = let (s1Vars, s1Terms) = unzip s1
-                                    s3Terms = map (apply (Subst s2)) s1Terms
-                                    s3 = (zip s1Vars s3Terms)
-                                in Subst (s3 ++ [ (svName2, sTerm2) | (svName2, sTerm2) <- s2, (svName1, sTerm1) <- s1 , (lookup svName2 s1) == Nothing])
+compose (Subst s2) (Subst s1) = 
+  let (s1Vars, s1Terms) = unzip s1
+      s3Terms = map (apply (Subst s2)) s1Terms
+      s3 = (zip s1Vars s3Terms)
+  in Subst (s3 ++ [ (n2, t2) | (n2, t2) <- s2, (elem n2 s1Vars) == False])
     
     
  --   (Subst ( [ (svName1, sTerm3) | (svName2, sTerm2) <- s2, (svName1, sTerm1) <- s1, s1Terms <- snd (unzip s1), sTerm3 <- (map (apply (Subst s2)) s1Term ) ] ++
