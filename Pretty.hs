@@ -12,30 +12,19 @@ instance Pretty a => Pretty (Maybe a) where
   pretty (Just x)  = pretty x
 
 -- instance pretty Term
+-- makes a Term more readable
 instance Pretty (Term) where
   pretty (Var vName)          = vName
   pretty (Comb cName [])      = cName
-  -- structure .(E,L)
-  pretty (Comb "." [t1,t2])   = case t2 of
-                                  -- if t2 is Comb and empty
-                                  Comb "[]" []  ->  "[" ++ pretty t1 ++ "]"
-                                  -- if t2 is Comb is and continue the List
-                                  --    like structure .(E,L)
-                                  -- init and tail to delete the
-                                  --    additional brackets
-                                  Comb "." [t3,t4]   ->  "[" ++ pretty t1 
-                                                             ++ ", " 
-                                                             ++ init ( tail (
-                                                              pretty( 
-                                                              Comb "." [t3,t4]
-                                                                 )))
-                                                        ++ "]"
-                                  -- if the second term is a variable or
-                                  -- the list doesnt continue list by structure
-                                  _             ->  "[" ++ pretty t1 ++ "|" 
-                                                        ++  pretty t2 ++ "]"
-  
-  -- if list in Comb is longer because structure list in Prolog
+  pretty (Comb "." [t1,t2])   = "[" ++ pretty'(t1,t2) ++ "]"
+   where
+    pretty' :: (Term,Term) -> String
+    pretty' (t3,t4)   = 
+      case t4 of
+          Comb "[]" []        -> pretty t3
+          Comb "." [t5,t6]    -> pretty t3 ++ ", " ++ pretty'(t5,t6) 
+          _                   -> pretty t3 ++ "|"  ++ pretty t4 
+    
   pretty (Comb cName t2)      = cName ++ "(" 
                                       ++ intercalate ", " (map pretty (t2))
                                       ++ ")"
