@@ -61,7 +61,7 @@ compose (Subst s2) (Subst s1) =
   let (s1Vars, s1Terms) = unzip s1
       s3Terms = map (apply (Subst s2)) s1Terms
       s3 = (zip s1Vars s3Terms)
-  in Subst (s3 ++ [ (n2, t2) | (n2, t2) <- s2, (elem n2 s1Vars) == False])
+  in Subst (s3 ++ [ (v2, t2) | (v2, t2) <- s2, (elem v2 s1Vars) == False])
     
     
  --   (Subst ( [ (svName1, sTerm3) | (svName2, sTerm2) <- s2, (svName1, sTerm1) <- s1, s1Terms <- snd (unzip s1), sTerm3 <- (map (apply (Subst s2)) s1Term ) ] ++
