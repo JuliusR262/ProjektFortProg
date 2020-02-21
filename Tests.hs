@@ -9,8 +9,6 @@ term1 =  (Comb "." [Var "K",Comb "." [Var "L",Var "A",Var "B", Var "B"]])
 
 pretty1 = pretty (apply subst1 term1)
 
-
-
 vars    = ["A","B","C"]
 substs  = Subst [("A",Var "B"),("X",Var "B"),("C",Var "B")]
 

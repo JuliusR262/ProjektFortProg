@@ -39,7 +39,6 @@ apply (Subst ((svName, sTerm):xs)) (Var vName)
     | otherwise = (apply (Subst xs) (Var vName))
 apply subst (Comb cName cTerm) = (Comb cName (map (apply subst) cTerm))
 
-
 -- Composes two substitutions into one.
 compose :: Subst -> Subst -> Subst
 compose (Subst s2) (Subst s1) = 
