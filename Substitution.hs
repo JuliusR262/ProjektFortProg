@@ -5,7 +5,6 @@ import Pretty
 import Vars
 import Type
 import Data.List
-import TypeExtension
 
 -- Data type for substitutions
 data Subst = Subst [(VarName, Term)]
@@ -56,25 +55,17 @@ findSubst vName (Subst ((s3vName, s3Term):s3))
                                 | otherwise = findSubst vName (Subst s3)
 
 
--- compose two Substitutions to one single.
+-- Composes two substitutions into one.
 compose :: Subst -> Subst -> Subst
--- Die leere Substitution komponiert mit einer anderen Substitution
--- liefert die andere Substitution unverändert zurück.
-compose (Subst []) (Subst s1) = (Subst s1)
-compose (Subst s2) (Subst []) = (Subst s2)
-compose (Subst (x2:s2)) (Subst (x1:s1)) = let
-                                          (s2vName, s2Term) = x2
-                                          (s1vName, s1Term) = x1
-                                          -- Wendet eine Substitution auf alle Terme einer anderne Substitution an.
-                                          applyToAll :: Subst -> [(VarName,Term)] -> [(VarName,Term)]
-                                          applyToAll substToApply [] = []
-                                          -- Falls s2 eine Variable hat die s1 nicht hat,
-                                          -- wende die einzelne Substitution mit der Variable
-                                          -- auf alle Terme in s1 an und packe die einzelne Substitution
-                                          -- anschließend in s1.
-                                          applyToAll substToApply ((s3vName,s3Term):s3) = (s3vName, (apply substToApply s3Term)) : (applyToAll substToApply s3)
-                                          in if (findSubst s2vName (Subst (x1:s1))) == Nothing then compose (Subst s2) (Subst (x2:(applyToAll (Subst [x2]) (x1:s1))))
-                                                                                  else compose (Subst s2) (Subst (x1:s1))
+compose (Subst s2) (Subst s1) = 
+  let (s1Vars, s1Terms) = unzip s1
+      s3Terms = map (apply (Subst s2)) s1Terms
+      s3 = (zip s1Vars s3Terms)
+  in Subst (s3 ++ [ (n2, t2) | (n2, t2) <- s2, (elem n2 s1Vars) == False])
+    
+    
+ --   (Subst ( [ (svName1, sTerm3) | (svName2, sTerm2) <- s2, (svName1, sTerm1) <- s1, s1Terms <- snd (unzip s1), sTerm3 <- (map (apply (Subst s2)) s1Term ) ] ++
+ -- [ (svName2, sTerm2) | (svName2, sTerm2) <- s2, (svName1, sTerm1) <- s1 , (lookup svName2 s1) == Nothing]))
 
 -- schränkt eine Substitution ein für eine Menge von Variablen die in der Substitution vorkommen
 restrictTo :: [VarName] -> Subst -> Subst
@@ -86,3 +77,6 @@ restrictTo (v1:vs) (Subst s) = let x = (findSubst v1 (Subst s)) -- sucht in find
                                 _       -> restrictTo vs (Subst s)  -- Fall x = Nothing, wird verworfen und nächste Variable betrachtet
 
 
+subst1 = (single "B" (Comb "g" [Var "A", Var "C"]))
+subst2 = (single "B" (Comb "f" [Var "C"]))
+composit = subst2 `compose` subst1
