@@ -1,4 +1,41 @@
+----------- Pretty --------------------------
 
+--pretty' :: Term -> String
+--    pretty' (Comb "." [t3,t4])   = 
+--      case t4 of
+--          Comb "[]" []        -> pretty t3
+--          Comb "." [t5,t6]    -> pretty t3 ++ ", " ++ pretty'(Comb "." [t5,t6] )
+--          _                   -> pretty t3 ++ "|"  ++ pretty t4 
+--    pretty' _ = ""
+--    
+--  pretty (Comb cName t2)      = cName ++ "(" 
+--                                      ++ intercalate ", " (map pretty (t2))
+--                                      ++ ")"
+
+
+
+--pretty (Comb "." [t1,t2])   = case t2 of
+--                                  
+--                                  Comb "[]" []  ->  "[" ++ pretty t1 ++ "]"
+--                                  Comb "." [t3,t4]   -> "[" ++ pretty t1 ++ ", " 
+--                                                            ++ pretty(Comb "." [t3,t4] ) ++ "]"
+--                                  _             ->  "[" ++ pretty t1 ++ "|" 
+--                                                        ++ pretty t2 ++ "]"
+
+
+
+-- if t2 is Comb and empty
+-- if t2 is Comb is and continue the Lis
+                                  --    like structure .(E,L)
+                                  -- init and tail to delete the
+                                  --    additional brackets
+-- if the second term is a variable or
+                                  -- the list doesnt continue list by structure
+                                  
+-- if list in Comb is longer because structure list in Prolog
+
+-------------------------------------------------
+-----------Substitution -------------------------
 -- 
 
 --apply (Subst []) term     = term
@@ -12,6 +49,36 @@
 
 
 
+-- restrictTo :: [VarName] -> Subst -> Subst
+-- restrictTo [] (Subst _) = Subst [] 
+-- restrictTo (v1:vs) (Subst s) = let x = (findSubst v1 (Subst s))
+--                         in  case x of
+--                                Just y  -> substConcat (Subst [y]) (restrictTo vs (Subst s))  
+--                                _       -> restrictTo vs (Subst s)
+
+
+
+
+ --   (Subst ( [ (svName1, sTerm3) | (svName2, sTerm2) <- s2, (svName1, sTerm1) <- s1, s1Terms <- snd (unzip s1), sTerm3 <- (map (apply (Subst s2)) s1Term ) ] ++
+ -- [ (svName2, sTerm2) | (svName2, sTerm2) <- s2, (svName1, sTerm1) <- s1 , (lookup svName2 s1) == Nothing]))
+
+-- schränkt eine Substitution ein für eine Menge von Variablen die in der Substitution vorkommen
+
+-- concatinate two Subst to one Subst by concatinate two Terms
+--substConcat :: Subst -> Subst -> Subst
+--substConcat (Subst xs) (Subst ys) = Subst (xs ++ ys)
+
+
+-- find the single Substitution Rules by a given Variable.
+-- and returns a Maybe of Nothing or Tuple of Varname and Term
+--findSubst :: VarName -> Subst -> Maybe (VarName, Term)
+-- by empty Substitution terminate with 'Nothing'
+--findSubst _ (Subst []) = Nothing
+--findSubst vName (Subst ((s3vName, s3Term):s3))
+--                                -- terminate with Substitutionsrule if the right were found.
+--                                | vName == s3vName = Just (s3vName, s3Term)
+--                                -- otherwise searching continue in the restlist of substitutionrules.
+--                                | otherwise = findSubst vName (Subst s3)
 
 
 --case x of
