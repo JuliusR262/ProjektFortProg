@@ -6,12 +6,12 @@ import Data.List
 class Pretty a where
   pretty :: a -> String
 
--- Instanz pretty Maybe
+-- instance pretty Maybe
 instance Pretty a => Pretty (Maybe a) where
   pretty Nothing = ""
   pretty (Just x)  = pretty x
 
--- Instanz pretty Term
+-- instance pretty Term
 instance Pretty (Term) where
   pretty (Var vName)          = vName
   pretty (Comb cName [])      = cName
@@ -19,7 +19,7 @@ instance Pretty (Term) where
   pretty (Comb "." [t1,t2])   = case t2 of
                                   -- if t2 is Comb and empty
                                   Comb "[]" []  ->  "[" ++ pretty t1 ++ "]"
-                                  -- if t2 is Comb ist and continue the List
+                                  -- if t2 is Comb is and continue the List
                                   --    like structure .(E,L)
                                   -- init and tail to delete the
                                   --    additional brackets
