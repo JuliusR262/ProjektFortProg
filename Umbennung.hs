@@ -32,7 +32,8 @@ mStoSubst ms =let (vs,fvs) = unzip ms in
               Subst (zip vs (map (\x -> Var x) fvs))
 
 rename :: Rule -> Forbidden -> Rule
-rename (Rule r rs) vs = let   (Rule x xs) = (Rule r rs)
+rename (Rule r rs) vs = let   (t:ts) = renameWild (r:rs) []
+                              (Rule x xs) = (Rule t ts)
                               substi = mStoSubst (buildSubst (allVars(Rule x xs)) vs emptyMS) in
                         Rule (apply substi x) (map (apply substi) xs)
 
@@ -44,9 +45,38 @@ buildSubst (v:vs) fbs st  = if((getVar v st) == Nothing) then
 
 
 
+renameWild :: [Term] -> Forbidden -> [Term]
+renameWild ts vs =  if(not (elem "_" (allVars (Goal ts)))) then
+                      ts
+                    else let  v = getUnusedV vs
+                              (tts,_) = renameSWild ts v False in
+                      renameWild tts (v:vs)
+                      
+renameSWild :: [Term] -> VarName -> Bool -> ([Term],Bool)
+renameSWild [(Var "_")] v False     = ([Var v],True)
+renameSWild [(Var x)]   _ False     =  ([Var x],False)
+renameSWild [Comb cname ts] v False = let (tts,bs) = renameSWild ts v False in 
+                                      ([Comb cname tts],bs)
+renameSWild (t:ts) v False          = let (tt,b)  = renameSWild [t] v False
+                                          (tts,bs)= renameSWild ts  v b in
+                                      ((tt++tts),bs)
+renameSWild ts _ b                  = (ts,b) 
 
 
+-- renameWild [(Var "_"),(Var "_")] []
+-- renameWild [Comb "." [Var "K", Comb "." [Var "L", Var "M", Var "N", Var "O"]]] []
 
+{-
+ where  renameWild' [Term] -> Forbidden -> Varname -> [Term]
+        renameWild' [Var "_"]   xs x  = [Var x]
+        renameWild' [Comb c ys] xs x  = [Comb c (renameWild ys (tail xs))]
+-}
+
+
+-- applyFst (single "_" (Var "_0")) ((Var "_"),false)
+
+
+{-
 renameWild :: [Term] -> Forbidden -> ([Term],Forbidden)
 renameWild []      vs = ([], vs)
 renameWild (t1:ts) vs = let (t2,f) = (renameWild' t1 vs) in
@@ -58,25 +88,12 @@ renameWild (t1:ts) vs = let (t2,f) = (renameWild' t1 vs) in
                             (Comb cname xs) ->  let (ttt,ff) = (renameWild xs vss) in
                                                 ((Comb cname ttt),(ff++vss))
                             _               -> (tt,vss)
-                            
-
-
-
-
-
-
-
+-}                            
 
 
 
 -- rename (Rule (Var "X") []) []
 -- rename (Rule (Var "X") [(Var "Y")]) [("_0")]
-
-
-
-
-
-
 
 
 
