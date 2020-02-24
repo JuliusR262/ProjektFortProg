@@ -5,6 +5,7 @@ import Pretty
 import Vars
 import Type
 import Data.List
+import Data.Maybe
 
 -- Data type for substitutions
 data Subst = Subst [(VarName, Term)]
@@ -42,28 +43,9 @@ apply subst (Comb cName cTerm) = (Comb cName (map (apply subst) cTerm))
 -- Composes two substitutions into one.
 compose :: Subst -> Subst -> Subst
 compose (Subst s2) (Subst s1) = 
-  let       (s1Vars, s1Terms) = unzip s1
-            s3 =  [ (n2, t2) | (n2, t2) <- s2, (elem n2 s1Vars) == False]
-  in Subst (s3 ++ [ (v1,  t) | (v1,_) <- s1, t <- map (apply (Subst s3)) s1Terms] )
-
-  
+  let s3 = [ (n2, t2) | (n2, t2) <- s2, isNothing (lookup n2 s1)]
+  in Subst (s3 ++ [(v1, (apply (Subst s3) t1)) | (v1, t1) <- s1])  
   
 restrictTo :: [VarName] -> Subst -> Subst
 restrictTo xs (Subst ts1) = Subst [(v2Name,t) | v1Name <- xs,(v2Name,t) <- ts1,v1Name==v2Name]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
