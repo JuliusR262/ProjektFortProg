@@ -44,10 +44,15 @@ sld' (Prog rs) (Goal ts) fb =
                                           let newGoal =  Goal (map (apply subst) (renamedRTS ++ (tail ts))),
                                           let fb' = fb ++ (allVars subst)]
 
+solve :: Strategy -> Prog -> Goal -> [Subst]
+solve stgy prog goal = map (restrictTo (allVars goal) )(stgy (sld prog goal))  
+
+
 dfs :: Strategy
 dfs (SLDT (Goal []) _)          = [Subst []]
 dfs (SLDT (Goal xs) [])         = []
 dfs (SLDT g ((subst, sldt):xs)) = (map (compose subst) (dfs sldt)) ++ (dfs (SLDT g xs))
+
 {-
 bfs :: Strategy
 bfs sldt = bfs' [(Subst [],sldt)] sldt
@@ -57,16 +62,24 @@ bfs' (q:qs) (SLDT (Goal []) []) = [Subst []]
 bfs' (q:qs) (SLDT (Goal g) []) = []
 bfs' ((subst , stdl):qs) (SLDT 
 -}
+
 goaltest  = Goal [(Comb "p" [Var "S", Comb "b" []])]
 goaltest2 = Goal [(Comb "p" [Var "_", Comb "b" []])]
+goaltest3  = Goal [(Comb "p" [Var "S", Var "S"])]
+goaltest4  = Goal [(Comb "p" [Var "_0", Comb "b" []])]
+goaltest5 = Goal [(Comb "p" [Var "_", Var "_"])]
                                           
 progtest = Prog [ (Rule (Comb "p" [Var "X", Var "Z"]) [(Comb "q" [Var "X", Var "Y"]), (Comb "p" [Var "Y", Var "Z"])] ), 
                  (Rule (Comb "p" [Var "X", Var "X"]) []),
                  (Rule (Comb "q" [Comb "a" [], Comb "b" []]) []) ]
 
 
-dfstest = intercalate ", " (map (pretty) (dfs (sld progtest goaltest)))
-dfstest2 = intercalate ", " (map (pretty) (dfs (sld progtest goaltest2)))
+dfstest  = intercalate ", " (map (pretty) (solve dfs progtest goaltest))
+dfstest2 = intercalate ", " (map (pretty) (solve dfs progtest goaltest2))
+dfstest3 = intercalate ", " (map (pretty) (solve dfs progtest goaltest3))
+dfstest4 = intercalate ", " (map (pretty) (solve dfs progtest goaltest4))
+dfstest5 = intercalate ", " (map (pretty) (solve dfs progtest goaltest5))
+
 
 {--
 SLDT (Goal [Comb "p" [Var "S",Comb "b" []]]) 
