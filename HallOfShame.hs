@@ -264,6 +264,10 @@ b = (Rule (Var "_") [Var "B", Var "Q",Comb "."[Var "A" , Comb "[]" []]])
 
 
 
+          
+--  let (Rule renamedRT renamedRTS) = rename (Rule rt rts) (allVars (head ts)), 
+--  let maybeSubst = (unify (head ts) (rename r (allVars (head ts)))), 
+--  let newGoal = apply subst rts ++ ]
 
 
 
