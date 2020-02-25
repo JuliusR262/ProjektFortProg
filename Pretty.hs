@@ -10,6 +10,9 @@ class Pretty a where
 instance Pretty a => Pretty (Maybe a) where
   pretty Nothing = ""
   pretty (Just x)  = pretty x
+  
+instance Pretty (Goal) where
+  pretty (Goal ts) = intercalate ", " (map pretty ts)
 
 -- instance pretty Term
 -- makes a Term more readable
@@ -28,3 +31,5 @@ instance Pretty (Term) where
   pretty (Comb cName t2)      = cName ++ "(" 
                                       ++ intercalate ", " (map pretty (t2))
                                       ++ ")"
+                                      
+ 

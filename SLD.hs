@@ -48,7 +48,7 @@ dfs :: Strategy
 dfs (SLDT (Goal []) _)          = [Subst []]
 dfs (SLDT (Goal xs) [])         = []
 dfs (SLDT g ((subst, sldt):xs)) = (map (compose subst) (dfs sldt)) ++ (dfs (SLDT g xs))
-
+{-
 bfs :: Strategy
 bfs sldt = bfs' [(Subst [],sldt)] sldt
 bfs' :: [(Subst, SLDTree)] -> Strategy
@@ -56,8 +56,9 @@ bfs' [] _ = error "Invalid Queue"
 bfs' (q:qs) (SLDT (Goal []) []) = [Subst []]
 bfs' (q:qs) (SLDT (Goal g) []) = []
 bfs' ((subst , stdl):qs) (SLDT 
-
-goaltest = Goal [(Comb "p" [Var "S", Comb "b" []])]
+-}
+goaltest  = Goal [(Comb "p" [Var "S", Comb "b" []])]
+goaltest2 = Goal [(Comb "p" [Var "_", Comb "b" []])]
                                           
 progtest = Prog [ (Rule (Comb "p" [Var "X", Var "Z"]) [(Comb "q" [Var "X", Var "Y"]), (Comb "p" [Var "Y", Var "Z"])] ), 
                  (Rule (Comb "p" [Var "X", Var "X"]) []),
@@ -65,6 +66,7 @@ progtest = Prog [ (Rule (Comb "p" [Var "X", Var "Z"]) [(Comb "q" [Var "X", Var "
 
 
 dfstest = intercalate ", " (map (pretty) (dfs (sld progtest goaltest)))
+dfstest2 = intercalate ", " (map (pretty) (dfs (sld progtest goaltest2)))
 
 {--
 SLDT (Goal [Comb "p" [Var "S",Comb "b" []]]) 

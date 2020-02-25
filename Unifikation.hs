@@ -30,6 +30,8 @@ ds t1 t2 =
   case (t1, t2) of
     (Var "_", term) -> Nothing
     (term, Var "_") -> Nothing
+    (Var vname,Comb cname ts) -> Just (Var vname,Comb cname ts)
+    (Comb cname ts,Var vname) -> Just (Var vname,Comb cname ts)
     (Var v1, Var v2) -> if v1 == v2 then Nothing 
                                     else Just (Var v1, Var v2)
     
