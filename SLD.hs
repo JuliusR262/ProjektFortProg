@@ -46,7 +46,7 @@ sld' (Prog rs) (Goal ts) fb =
                                           let fb' = fb ++ (allVars subst)]
 
 solve :: Strategy -> Prog -> Goal -> [Subst]
-solve stgy prog goal = map (restrictTo (allVars goal) )(stgy (sld prog goal))
+solve stgy prog goal = map (restrictTo (allVars goal) )  (stgy (sld prog goal))
 
 
 dfs :: Strategy
