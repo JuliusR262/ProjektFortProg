@@ -21,7 +21,7 @@ instance Pretty (SLDTree) where
    where
     pretty' :: (Subst, SLDTree) -> String
     pretty' (subst, sldt) = " ( Subst und SLDT " ++ pretty subst
-                                  ++ ", " ++ pretty sldt ++ ")"
+                            ++ ", " ++ pretty sldt ++ ")"
 
 findRules :: Prog -> Term -> [Rule]
 findRules (Prog []) _ = []
@@ -51,8 +51,8 @@ solve stgy prog goal = map (restrictTo (allVars goal) ) (stgy (sld prog goal))
 
 dfs :: Strategy
 dfs (SLDT (Goal []) _)          = [Subst []]
-dfs (SLDT (Goal _) [])         = []
-dfs (SLDT g ((subst, sldt):xs)) = (compose <$>  (dfs sldt) <*> [subst]) ++ (dfs (SLDT g xs)) --(map (compose subst) (dfs sldt))
+dfs (SLDT (Goal _) [])          = []
+dfs (SLDT g ((subst, sldt):xs)) = (compose <$> (dfs sldt) <*> [subst]) ++ (dfs (SLDT g xs))
 
 
 bfs :: Strategy
