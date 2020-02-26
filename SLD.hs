@@ -52,7 +52,8 @@ solve stgy prog goal = map (restrictTo (allVars goal) ) (stgy (sld prog goal))
 dfs :: Strategy
 dfs (SLDT (Goal []) _)          = [Subst []]
 dfs (SLDT (Goal _) [])         = []
-dfs (SLDT g ((subst, sldt):xs)) = (foldr compose subst (dfs sldt)) : (dfs (SLDT g xs))
+dfs (SLDT g ((subst, sldt):xs)) = (compose <$>  (dfs sldt) <*> [subst]) ++ (dfs (SLDT g xs)) --(map (compose subst) (dfs sldt))
+
 
 bfs :: Strategy
 bfs sldt = bfs' [(Subst [],sldt)]
@@ -62,4 +63,4 @@ bfs' [] = []
 bfs' (q:qs) = case q of
   (qsubst, SLDT (Goal []) [] ) -> qsubst : (bfs' qs)
   (_, SLDT (Goal _) [] ) -> bfs' qs
-  (qsubst, SLDT (Goal _) ts ) -> bfs' (qs ++ map (\ (sbst, sldts) -> (compose sbst qsubst, sldts)) ts)
+  (qsubst, SLDT (Goal _) ts ) -> bfs' (qs ++ map (\ (sbst,sldts) -> (compose sbst qsubst, sldts)) ts)
