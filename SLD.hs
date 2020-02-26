@@ -1,29 +1,27 @@
-<<<<<<< HEAD
 module SLD (Strategy, dfs, bfs, solve) where
-=======
-module SLD (Strategy,SLDTree,sld,solve,dfs,bfs) where
->>>>>>> c553e12be1a0904285d13eb452c586578bdb40e9
 
-import Type
+import Data.List  (intercalate)
+import Data.Maybe (isJust, fromJust)
+
 import Substitution
-import Vars
+import Type
 import Umbennung
-import Data.Maybe
 import Unifikation
-import Pretty
-import Data.List
+import Vars
 
 data SLDTree = SLDT Goal [(Subst, SLDTree)]
   deriving Show
 
 type Strategy = SLDTree -> [Subst]
 
-
 instance Pretty (SLDTree) where
   pretty (SLDT (Goal ts) []) = (pretty (Goal ts))
-  pretty (SLDT (Goal ts) xs) = "( Goal " ++ (pretty (Goal ts)) ++ ", " ++ intercalate ", " (map pretty' xs)  ++ ")"
-    where pretty' :: (Subst, SLDTree) -> String
-          pretty' (subst, sldt) = " ( Subst und SLDT " ++ pretty subst ++ ", " ++ pretty sldt ++ ")"
+  pretty (SLDT (Goal ts) xs) = "( Goal " ++ (pretty (Goal ts)) ++ ", "
+                               ++ intercalate ", " (map pretty' xs) ++ ")"
+   where
+    pretty' :: (Subst, SLDTree) -> String
+    pretty' (subst, sldt) = " ( Subst und SLDT " ++ pretty subst
+                                  ++ ", " ++ pretty sldt ++ ")"
 
 findRules :: Prog -> Term -> [Rule]
 findRules (Prog []) _ = []
@@ -33,12 +31,11 @@ findRules (Prog ((Rule (Comb cName1 cTerm1) rTerms ):xs)) (Comb cName2 cTerm2)
 findRules _ _ = error "Invalid Term"
 
 sld :: Prog -> Goal -> SLDTree
-sld p (Goal []) = SLDT (Goal []) []
-sld (Prog rs) (Goal ts) = sld' (Prog rs) (Goal ts) (allVars (Goal ts))
+sld prog goal = sld' prog goal (allVars goal)
 
 
 sld' :: Prog -> Goal -> Forbidden -> SLDTree
-sld' p (Goal []) _ = SLDT (Goal []) []
+sld' _ (Goal []) _ = SLDT (Goal []) []
 sld' (Prog rs) (Goal ts) fb =
   SLDT (Goal ts) [ (subst, ((sld' (Prog rs) newGoal fb'))) |
                                           (Rule renamedRT renamedRTS) <- map ((flip rename) fb) (findRules (Prog rs) (head ts)),
@@ -54,7 +51,7 @@ solve stgy prog goal = map (restrictTo (allVars goal) )(stgy (sld prog goal))
 
 dfs :: Strategy
 dfs (SLDT (Goal []) _)          = [Subst []]
-dfs (SLDT (Goal xs) [])         = []
+dfs (SLDT (Goal _) [])         = []
 dfs (SLDT g ((subst, sldt):xs)) = (map (compose subst) (dfs sldt)) ++ (dfs (SLDT g xs))
 
 
@@ -65,31 +62,9 @@ bfs' :: [(Subst, SLDTree)] -> [Subst]
 bfs' [] = []
 bfs' (q:qs) = case q of
   (qsubst, SLDT (Goal []) [] ) -> qsubst : (bfs' qs)
-  (qsubst, SLDT (Goal _) [] ) -> bfs' qs
-  (qsubst, SLDT (Goal _) ts ) -> bfs' (qs ++ map (\(sbst,sldts) -> (compose qsubst sbst, sldts)) ts)
+  (_, SLDT (Goal _) [] ) -> bfs' qs
+  (qsubst, SLDT (Goal _) ts ) -> bfs' (qs ++ map (\ (sbst,sldts) -> (compose qsubst sbst, sldts)) ts)
 
-
-
-goaltest  = Goal [(Comb "p" [Var "S", Comb "b" []])]
-goaltest2 = Goal [(Comb "p" [Var "_", Comb "b" []])]
-goaltest3  = Goal [(Comb "p" [Var "S", Var "S"])]
-goaltest4  = Goal [(Comb "p" [Var "_0", Comb "b" []])]
-goaltest5 = Goal [(Comb "p" [Var "_", Var "_"])]
-
-progtest = Prog [ (Rule (Comb "p" [Var "X", Var "Z"]) [(Comb "q" [Var "X", Var "Y"]), (Comb "p" [Var "Y", Var "Z"])] ),
-                  (Rule (Comb "p" [Var "X", Var "X"]) []),
-                  (Rule (Comb "q" [Comb "a" [], Comb "b" []]) []) ]
-
-
-dfstest  = intercalate ", " (map (pretty) (solve dfs progtest goaltest))
-dfstest2 = intercalate ", " (map (pretty) (solve dfs progtest goaltest2))
-dfstest3 = intercalate ", " (map (pretty) (solve dfs progtest goaltest3))
-dfstest4 = intercalate ", " (map (pretty) (solve dfs progtest goaltest4))
-dfstest5 = intercalate ", " (map (pretty) (solve dfs progtest goaltest5))
-
-
-
-bfstest = intercalate ", " (map (pretty) (solve bfs progtest goaltest))
 
 
 {--

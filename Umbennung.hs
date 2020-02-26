@@ -1,10 +1,9 @@
-module Umbennung (rename,Forbidden) where
+module Umbennung (rename, Forbidden) where
+
+import Pretty
 import Substitution
 import Type
 import Vars
-import Pretty
---import Control.Monad.State
-
 
 type MyState = [(VarName, VarName)]
 
