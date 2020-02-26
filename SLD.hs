@@ -1,4 +1,4 @@
-module SLD () where
+module SLD (sld,solve,dfs,bfs) where
 
 import Type
 import Substitution
@@ -64,6 +64,8 @@ bfs' (q:qs) = case q of
   (qsubst, SLDT (Goal _) [] ) -> bfs' qs
   (qsubst, SLDT (Goal _) ts ) -> bfs' (qs ++ map (\(sbst,sldts) -> (compose qsubst sbst, sldts)) ts)
 
+
+
 goaltest  = Goal [(Comb "p" [Var "S", Comb "b" []])]
 goaltest2 = Goal [(Comb "p" [Var "_", Comb "b" []])]
 goaltest3  = Goal [(Comb "p" [Var "S", Var "S"])]
@@ -71,8 +73,8 @@ goaltest4  = Goal [(Comb "p" [Var "_0", Comb "b" []])]
 goaltest5 = Goal [(Comb "p" [Var "_", Var "_"])]
 
 progtest = Prog [ (Rule (Comb "p" [Var "X", Var "Z"]) [(Comb "q" [Var "X", Var "Y"]), (Comb "p" [Var "Y", Var "Z"])] ),
-                 (Rule (Comb "p" [Var "X", Var "X"]) []),
-                 (Rule (Comb "q" [Comb "a" [], Comb "b" []]) []) ]
+                  (Rule (Comb "p" [Var "X", Var "X"]) []),
+                  (Rule (Comb "q" [Comb "a" [], Comb "b" []]) []) ]
 
 
 dfstest  = intercalate ", " (map (pretty) (solve dfs progtest goaltest))
@@ -80,6 +82,8 @@ dfstest2 = intercalate ", " (map (pretty) (solve dfs progtest goaltest2))
 dfstest3 = intercalate ", " (map (pretty) (solve dfs progtest goaltest3))
 dfstest4 = intercalate ", " (map (pretty) (solve dfs progtest goaltest4))
 dfstest5 = intercalate ", " (map (pretty) (solve dfs progtest goaltest5))
+
+
 
 bfstest = intercalate ", " (map (pretty) (solve bfs progtest goaltest))
 
