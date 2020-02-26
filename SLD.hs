@@ -1,4 +1,4 @@
-module SLD (sld,solve,dfs,bfs) where
+module SLD (Strategy,SLDTree,sld,solve,dfs,bfs) where
 
 import Type
 import Substitution
