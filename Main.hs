@@ -54,8 +54,12 @@ process x rst = do case filter (/=' ') x of
                                                   solve st prog (
                                                     fromRight (Goal []) y))))
                                             putStrLn "No more solutions."
-                                            else putStr "Failed loading Goal!"
+                                            else putStrLn "Failed loading Goal!"
                                           query rst
+
+
+
+
                 
 setStrat strat (REPLState prog st) = case strat of
                       "bfs" -> do putStrLn (stratS1 ++ "breadth" ++ stratS2)
@@ -65,12 +69,6 @@ setStrat strat (REPLState prog st) = case strat of
                       _     -> do putStrLn (stratSF)
                                   query (REPLState prog st)
  
-
-
-
-
-
-
 
 
 
