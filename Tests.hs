@@ -3,6 +3,10 @@ import Unifikation
 import Vars
 import Type
 import Umbennung
+import Parser
+import Data.Either
+import SLD
+import Data.List (intercalate)
 
 subst11 = (Subst [("A", Comb "f" [Var "B", Var "_", Comb "true" []]),("D", Comb "false" [])])
 subst12 = (Subst [("B", Comb "false" [])])
@@ -49,3 +53,6 @@ dfstest5 = intercalate ", " (map (pretty) (solve dfs progtest goaltest5))
 
 bfstest  = intercalate ", " (map (pretty) (solve bfs progtest goaltest))
 bfstest2 = intercalate ", " (map (pretty) (solve bfs progtest goaltest2))
+
+
+--appendprog = fromRight (Prog []) ((parseFile "append.pl") :: IO (Either String Prog))

@@ -46,14 +46,13 @@ sld' (Prog rs) (Goal ts) fb =
                                           let fb' = fb ++ (allVars subst)]
 
 solve :: Strategy -> Prog -> Goal -> [Subst]
-solve stgy prog goal = map (restrictTo (allVars goal) )(stgy (sld prog goal))
+solve stgy prog goal = map (restrictTo (allVars goal) ) (stgy (sld prog goal))
 
 
 dfs :: Strategy
 dfs (SLDT (Goal []) _)          = [Subst []]
 dfs (SLDT (Goal _) [])         = []
-dfs (SLDT g ((subst, sldt):xs)) = (map (compose subst) (dfs sldt)) ++ (dfs (SLDT g xs))
-
+dfs (SLDT g ((subst, sldt):xs)) = (foldr compose subst (dfs sldt)) : (dfs (SLDT g xs))
 
 bfs :: Strategy
 bfs sldt = bfs' [(Subst [],sldt)]
@@ -63,4 +62,4 @@ bfs' [] = []
 bfs' (q:qs) = case q of
   (qsubst, SLDT (Goal []) [] ) -> qsubst : (bfs' qs)
   (_, SLDT (Goal _) [] ) -> bfs' qs
-  (qsubst, SLDT (Goal _) ts ) -> bfs' (qs ++ map (\ (sbst,sldts) -> (compose qsubst sbst, sldts)) ts)
+  (qsubst, SLDT (Goal _) ts ) -> bfs' (qs ++ map (\ (sbst, sldts) -> (compose sbst qsubst, sldts)) ts)
