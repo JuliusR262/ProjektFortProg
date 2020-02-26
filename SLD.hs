@@ -64,25 +64,3 @@ bfs' (q:qs) = case q of
   (qsubst, SLDT (Goal []) [] ) -> qsubst : (bfs' qs)
   (_, SLDT (Goal _) [] ) -> bfs' qs
   (qsubst, SLDT (Goal _) ts ) -> bfs' (qs ++ map (\ (sbst,sldts) -> (compose qsubst sbst, sldts)) ts)
-
-
-
-{--
-SLDT (Goal [Comb "p" [Var "S",Comb "b" []]])
-[(Subst [("_1",Comb "b" []),("_0",Var "S")],SLDT (Goal [Comb "q" [Var "S",Var "_2"],Comb "p" [Var "_2",Comb "b" []]]) [(Subst [("_2",Comb "b" []),("S",Comb "a" [])],SLDT (Goal [Comb "p" [Comb "b" [],Comb "b" []]]) [(Subst [("_1",Comb "b" []),("_0",Comb "b" [])],SLDT (Goal [Comb "q" [Comb "b" [],Var "_2"],Comb "p" [Var "_2",Comb "b" []]]) []),(Subst [("_0",Comb "b" [])],SLDT (Goal []) [])]),(Subst [("_2",Comb "b" []),("S",Comb "a" [])],SLDT (Goal [Comb "p" [Comb "b" [],Comb "b" []]]) [(Subst [("_1",Comb "b" []),("_0",Comb "b" [])],SLDT (Goal [Comb "q" [Comb "b" [],Var "_2"],Comb "p" [Var "_2",Comb "b" []]]) []),(Subst [("_0",Comb "b" [])],SLDT (Goal []) [])])]),(Subst [("S",Comb "b" []),("_0",Comb "b" [])],SLDT (Goal []) [])]
---}
-
-
-
-
-
-
-
-
-
-
-
-
-{--
-( Goal p(S, b),  ( Subst und SLDT {_1 -> b, _0 -> S}, ( Goal q(S, _2), p(_2, b),  ( Subst und SLDT {_2 -> b, S -> a}, ( Goal p(b, b),  ( Subst und SLDT {_1 -> b, _0 -> b}, q(b, _2), p(_2, b)),  ( Subst und SLDT {_0 -> b}, ))),  ( Subst und SLDT {_2 -> b, S -> a}, ( Goal p(b, b),  ( Subst und SLDT {_1 -> b, _0 -> b}, q(b, _2), p(_2, b)),  ( Subst und SLDT {_0 -> b}, ))))),  ( Subst und SLDT {S -> b, _0 -> b}, ))
---}

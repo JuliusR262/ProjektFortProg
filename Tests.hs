@@ -2,6 +2,7 @@ import Substitution
 import Unifikation
 import Vars
 import Type
+import Umbennung
 
 subst11 = (Subst [("A", Comb "f" [Var "B", Var "_", Comb "true" []]),("D", Comb "false" [])])
 subst12 = (Subst [("B", Comb "false" [])])
@@ -23,3 +24,28 @@ composit2 = subst4 `compose` subst3
 
 ds1 = Comb "." [Var "A", Comb "g" [Var "X", Var "_"] ,Var "h(A,B)",Var "D"]
 ds2 = Comb "." [Var "A", Comb "g" [Var "X", Var "W"], Var "Z", Var "D"]
+
+rule1 = (Rule (Comb "p" [Var "X", Var "Z"]) [(Comb "q" [Var "_", Var "Y"]), (Comb "p" [Var "Y", Var "Z"])])
+
+
+
+goaltest  = Goal [(Comb "p" [Var "S", Comb "b" []])]
+goaltest2 = Goal [(Comb "p" [Var "_", Comb "b" []])]
+goaltest3  = Goal [(Comb "p" [Var "_", Var "S"])]
+goaltest4  = Goal [(Comb "p" [Var "_0", Comb "b" []])]
+goaltest5 = Goal [(Comb "p" [Var "_", Var "_"])]
+
+progtest = Prog [ (Rule (Comb "p" [Var "X", Var "Z"]) [(Comb "q" [Var "X", Var "Y"]), (Comb "p" [Var "Y", Var "Z"])] ),
+                  (Rule (Comb "p" [Var "X", Var "X"]) []),
+                  (Rule (Comb "q" [Comb "a" [], Comb "b" []]) []) ]
+
+dfstest  = intercalate ", " (map (pretty) (solve dfs progtest goaltest))
+dfstest2 = intercalate ", " (map (pretty) (solve dfs progtest goaltest2))
+dfstest3 = intercalate ", " (map (pretty) (solve dfs progtest goaltest3))
+dfstest4 = intercalate ", " (map (pretty) (solve dfs progtest goaltest4))
+dfstest5 = intercalate ", " (map (pretty) (solve dfs progtest goaltest5))
+
+
+
+bfstest  = intercalate ", " (map (pretty) (solve bfs progtest goaltest))
+bfstest2 = intercalate ", " (map (pretty) (solve bfs progtest goaltest2))

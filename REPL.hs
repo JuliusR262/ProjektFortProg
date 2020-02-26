@@ -1,9 +1,10 @@
-import Type
-import SLD
-import Unifikation
-import Substitution
-import Vars
 import Data.List
+
+import SLD
+import Substitution
+import Type
+import Unifikation
+import Vars
 
 -- Prog = Loaded program, Strategy = SLD tree traversal strategy
 data REPLState = REPLState Prog Strategy
