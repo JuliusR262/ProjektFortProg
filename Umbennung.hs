@@ -1,11 +1,11 @@
-module Umbennung (rename) where
+module Umbennung (rename,Forbidden) where
 import Substitution
 import Type
 import Vars
 import Pretty
 --import Control.Monad.State
- 
- 
+
+
 type MyState = [(VarName, VarName)]
 
 type Forbidden = [VarName]
@@ -16,19 +16,19 @@ getUnusedV s = head( [fvvName | fvvName <- freshVars
 
 getUnusedVF :: MyState -> Forbidden -> VarName
 getUnusedVF s fbs = head( [fvvName | fvvName <- freshVars
-                              , not(elem fvvName (snd(unzip s))), not (elem fvvName fbs)] )                              
- 
+                              , not(elem fvvName (snd(unzip s))), not (elem fvvName fbs)] )
+
 expandState :: MyState -> VarName -> VarName -> MyState
 expandState state newVar assignedVar = (newVar, assignedVar) : state
- 
+
 getVar :: VarName -> MyState -> Maybe VarName
-getVar v s  = lookup v s 
+getVar v s  = lookup v s
 
 emptyMS :: MyState
 emptyMS = []
 
 mStoSubst :: MyState -> Subst
-mStoSubst ms =let (vs,fvs) = unzip ms in 
+mStoSubst ms =let (vs,fvs) = unzip ms in
               Subst (zip vs (map (\x -> Var x) fvs))
 
 rename :: Rule -> Forbidden -> Rule
@@ -51,15 +51,13 @@ renameWild ts vs =  if(not (elem "_" (allVars (Goal ts)))) then
                     else let  v = getUnusedV vs
                               (tts,_) = renameSWild ts v False in
                       renameWild tts (v:vs)
-                      
+
 renameSWild :: [Term] -> VarName -> Bool -> ([Term],Bool)
 renameSWild [(Var "_")] v False     = ([Var v],True)
 renameSWild [(Var x)]   _ False     =  ([Var x],False)
-renameSWild [Comb cname ts] v False = let (tts,bs) = renameSWild ts v False in 
+renameSWild [Comb cname ts] v False = let (tts,bs) = renameSWild ts v False in
                                       ([Comb cname tts],bs)
 renameSWild (t:ts) v False          = let (tt,b)  = renameSWild [t] v False
                                           (tts,bs)= renameSWild ts  v b in
                                       ((tt++tts),bs)
-renameSWild ts _ b                  = (ts,b) 
-
-
+renameSWild ts _ b                  = (ts,b)
