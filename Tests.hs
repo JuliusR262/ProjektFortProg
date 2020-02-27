@@ -7,6 +7,7 @@ import Parser
 import Data.Either
 import SLD
 import Data.List (intercalate)
+import Util
 
 subst11 = (Subst [("A", Comb "f" [Var "B", Var "_", Comb "true" []]),("D", Comb "false" [])])
 subst12 = (Subst [("B", Comb "false" [])])
@@ -66,8 +67,8 @@ goaltestsss1   = (parse "append(X,Y,[1,2]).") :: Either String Goal
 appendtest = do x <- (parseFile "append.pl") :: IO (Either String Prog)
                 let y = goaltestsss1
                 let a = goaltestsss2
-                let z = (intercalate ", " (map (pretty) (solve bfs (fromRight (Prog []) x) (fromRight (Goal []) y))))
-                let b = (intercalate ", " (map (pretty) (solve bfs (fromRight (Prog []) x) (fromRight (Goal []) a))))
+                let z = (intercalate ", " (map (pretty) (solve bfs (fromRight' (Prog []) x) (fromRight (Goal []) y))))
+                let b = (intercalate ", " (map (pretty) (solve bfs (fromRight' (Prog []) x) (fromRight (Goal []) a))))
                 let q = pretty (sld (fromRight (Prog []) x) (fromRight (Goal []) y))
                 let p = pretty (sld (fromRight (Prog []) x) (fromRight (Goal []) a))
                 putStrLn q
@@ -89,15 +90,14 @@ appendtest2 = do  x <- (parseFile "append.pl") :: IO (Either String Prog)
 
 
 
+reverseprog = (parse "examples/list.pl") :: IO (Either String Prog)
+
+goalreverse = (parse "reverse([1,2,3],X)") :: Either String Goal
 
 
-
-
-
-
-
-
-
+reversetest = do x <- reverseprog 
+                 let y <- fromRight' x
+                 let a = (intercalate ", " (map (pretty) (solve bfs (from
 
 
 

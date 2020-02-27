@@ -6,6 +6,7 @@ import Data.Either
 import Data.List()
 import Pretty()
 import Substitution
+import Util
 
 header,string,stratS1,stratS2,stratSF,help :: String
 header = unlines ["Welcome!" ,
@@ -14,8 +15,6 @@ string = "?- "
 stratS1 = "Strategy set to "
 stratS2 = "-first search."
 stratSF = "Strategy set failed! set to old strategy!"
-
-
 
 help = unlines
     ["Commands available from the prompt:",
@@ -29,8 +28,8 @@ help = unlines
 data REPLState = REPLState Prog Strategy
 
 main :: IO()
-main = do   putStr header
-            query (REPLState (Prog []) dfs)
+main = do putStr header
+          query (REPLState (Prog []) dfs)
 
 query :: REPLState -> IO()
 query rst = do  putStr string
@@ -59,26 +58,20 @@ process x rst = do case filter (/=' ') x of
                                             else putStrLn "Failed loading Goal!"
                                           query rst
 
-fromRight' :: b -> Either a b -> b
-fromRight' _ (Right b)  = b
-fromRight' b  _         = b
-
 checkEmpty,output :: [Subst] -> IO()
 checkEmpty substs = case substs of
                          [] ->  putStrLn "false"
                          _  ->  output substs
 
-
-output []             = do  putStrLn "No more solutions."
-output (subst:substs) = do  let x = pretty subst
-                            if(x == "{}") then
-                              putStr "true"
-                              else putStr x
-                            y <- getChar
-                            putStrLn ""
-                            if (y == ';') then
-                              output substs
-                              else return()
+output []             = do putStrLn "No more solutions."
+output (subst:substs) = do case subst of 
+                             Subst [] -> putStr "true"
+                             _        -> putStr (pretty subst)
+                           y <- getChar
+                           putStrLn ""
+                           if (y == ';') then
+                             output substs
+                             else return()
 
 setStrat :: String -> REPLState -> IO()
 setStrat strat (REPLState prog st) = case strat of

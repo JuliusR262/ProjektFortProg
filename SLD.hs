@@ -48,14 +48,15 @@ sld' (Prog rs) (Goal ts) fb =
                                           let fb' = fb ++ (allVars subst)]
 
 solve :: Strategy -> Prog -> Goal -> [Subst]
-solve stgy prog (Goal ts) =  let renamedGoal = (Goal (renameWild ts (allVars (Goal ts))))in 
-                             map (restrictTo (allVars (Goal ts)) ) (stgy (sld prog renamedGoal))
+solve stgy (Prog rs) (Goal ts) =  let renamedGoal = (Goal (renameWild ts (allVars (Goal ts))))
+                                      renamedProg = Prog (( map ((flip renameWildRule) (allVars (Prog rs))) rs ))
+                                  in map (restrictTo (allVars (Goal ts)) ) (stgy (sld renamedProg renamedGoal))
 
 
 dfs :: Strategy
-dfs (SLDT (Goal []) _)          = [Subst []]
+dfs (SLDT (Goal []) _)          = pure empty
 dfs (SLDT (Goal _) [])          = []
-dfs (SLDT g ((subst, sldt):xs)) = (compose <$> (dfs sldt) <*> [subst]) ++ (dfs (SLDT g xs))
+dfs (SLDT g ((subst, sldt):xs)) = (compose <$> (dfs sldt) <*> pure subst) ++ (dfs (SLDT g xs))
 
 
 bfs :: Strategy

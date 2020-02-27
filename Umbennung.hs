@@ -1,4 +1,4 @@
-module Umbennung (rename,renameWild,Forbidden) where
+module Umbennung (rename,renameWild,Forbidden,renameWildRule) where
 
 import Pretty()
 import Substitution
@@ -35,7 +35,7 @@ rename :: Rule -> Forbidden -> Rule
 rename (Rule r rs) vs = let   (Rule x xs) = (Rule r rs)
                               substi = mStoSubst (buildSubst (filter (/= "_")(allVars(Rule x xs))) vs emptyMS) 
                               (Rule p ps) = Rule (apply substi x) (map (apply substi) xs) 
-                              (t:ts) =renameWild (p:ps) [] in
+                              (t:ts) = renameWild (p:ps) [] in
                               (Rule t ts)
                               
 
@@ -45,7 +45,9 @@ buildSubst (v:vs) fbs st  = if((getVar v st) == Nothing) then
                               buildSubst vs fbs (expandState st v (getUnusedVF st fbs))
                             else buildSubst vs fbs st
 
-
+renameWildRule :: Rule -> Forbidden -> Rule
+renameWildRule (Rule t ts) vs = let tts = renameWild (t:ts) vs
+                                in Rule (head tts) (tail tts)
 
 renameWild :: [Term] -> Forbidden -> [Term]
 renameWild ts vs =  if(not (elem "_" (allVars (Goal ts)))) then
