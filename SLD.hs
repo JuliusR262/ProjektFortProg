@@ -1,13 +1,17 @@
-module SLD (Strategy, dfs, bfs, solve) where
+module SLD (Strategy, dfs, bfs, solve, sld) where
 
 import Data.List  (intercalate)
 import Data.Maybe (isJust, fromJust)
+
+import Data.Either
 
 import Substitution
 import Type
 import Umbennung
 import Unifikation
 import Vars
+
+import Parser
 
 data SLDTree = SLDT Goal [(Subst, SLDTree)]
   deriving Show
@@ -39,11 +43,50 @@ sld' _ (Goal []) _ = SLDT (Goal []) []
 sld' (Prog rs) (Goal ts) fb =
   SLDT (Goal ts) [ (subst, ((sld' (Prog rs) newGoal fb'))) |
                                           (Rule renamedRT renamedRTS) <- map ((flip rename) fb) (findRules (Prog rs) (head ts)),
-                                          let maybeSubst = unify renamedRT (head ts),
+                                          let maybeSubst = unify (head ts) renamedRT,
                                           isJust maybeSubst,
                                           let subst = fromJust maybeSubst,
                                           let newGoal =  Goal (map (apply subst) (renamedRTS ++ (tail ts))),
                                           let fb' = fb ++ (allVars subst)]
+
+
+appendrule1 = Rule (Comb "append" [Comb "[]" [], Var "L", Var "L"]) []
+appendrule2 = Rule (Comb "append" [Comb "." [Var "E", Var "R"],Var "L",Comb "." [Var "E", Var "RL"]]) [Comb "append" [Var "R", Var "L", Var "RL"]]
+
+appendrule1term = (Comb "append" [Comb "[]" [], Var "L", Var "L"])
+appendrule2term = (Comb "append" [Var "R", Var "L", Var "RL"])
+
+test123 = apply (fromJust (unify (head appendgoal) appendrule1term)) (head appendgoal)
+test1232 = apply (fromJust (unify (head appendgoal) appendrule2term)) (head appendgoal)
+
+appendgoal = [(Comb "append" [Var "_", Var "Y", Comb "." [Comb "1" [], Comb "2" []]])]
+
+{--
+
+-- append([],L,L).
+-- append([E|R],L,[E|RL]) :- append(R,L,RL).
+
+
+appendgoal   = (parse "append(_,Y,[1,2]).") :: Either String Goal
+
+appendprog = Prog (appendrule1 : appendrule2 : [])
+
+goaltest  = Goal [(Comb "p" [Var "S", Comb "b" []])]
+goaltest2 = Goal [(Comb "p" [Var "_", Comb "b" []])]
+goaltest3  = Goal [(Comb "p" [Var "_", Var "S"])]
+goaltest4  = Goal [(Comb "p" [Var "_0", Comb "b" []])]
+goaltest5 = Goal [(Comb "p" [Var "_", Var "_"])]
+
+progtest = Prog [ (Rule (Comb "p" [Var "X", Var "Z"]) [(Comb "q" [Var "X", Var "Y"]), (Comb "p" [Var "Y", Var "Z"])] ),
+                  (Rule (Comb "p" [Var "X", Var "X"]) []),
+                  (Rule (Comb "q" [Comb "a" [], Comb "b" []]) []) ]
+--}
+
+
+--appendprog = do x <- (parseFile "append.pl") :: IO (Either String Prog)
+--                let y = (fromRight (Prog []) x)
+--                let z =
+
 
 solve :: Strategy -> Prog -> Goal -> [Subst]
 solve stgy prog goal = map (restrictTo (allVars goal) ) (stgy (sld prog goal))

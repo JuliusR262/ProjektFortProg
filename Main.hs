@@ -8,7 +8,7 @@ import Pretty()
 import Substitution
 
 header,string,stratS1,stratS2,stratSF,help :: String
-header = unlines ["Welcome!" , 
+header = unlines ["Welcome!" ,
                  ("Type " ++ ('"' : ":h") ++ ('"' : " for help."))]
 string = "?- "
 stratS1 = "Strategy set to "
@@ -17,7 +17,7 @@ stratSF = "Strategy set failed! set to old strategy!"
 
 
 
-help = unlines 
+help = unlines
     ["Commands available from the prompt:",
     " <goal>      Solves/proves the specified goal.",
     " :h          Shows this help message.",
@@ -25,7 +25,7 @@ help = unlines
     " :q          Exits the interactive environment.",
     " :s <strat>  Sets the specified search strategy",
     "             where <strat> is one of 'dfs', 'bfs', or 'iddfs'."]
-    
+
 data REPLState = REPLState Prog Strategy
 
 main :: IO()
@@ -37,7 +37,7 @@ query rst = do  putStr string
                 x <- getLine
                 process x rst
 
-process :: String -> REPLState -> IO()                
+process :: String -> REPLState -> IO()
 process x rst = do case filter (/=' ') x of
                     ""              -> query rst
                     ":q"            -> return()
@@ -45,7 +45,7 @@ process x rst = do case filter (/=' ') x of
                     (':':'l':_)     -> do y <- (parseFile (tail (tail x)))
                                                   :: IO (Either String Prog)
                                           let (REPLState p st) = rst
-                                          if(isRight y) then 
+                                          if(isRight y) then
                                             putStrLn "Loaded."
                                             else putStrLn ("Failed Loading.")
                                           query (REPLState (fromRight' p y) st)
@@ -70,7 +70,8 @@ checkEmpty substs = case substs of
 
 
 output []             = do  putStrLn "No more solutions."
-output (subst:substs) = do  let x = pretty subst
+output (subst:substs) = do  putStrLn "IN OUTPUT"
+                            let x = pretty subst
                             if(x == "{}") then
                               putStr "true"
                               else putStr x
@@ -79,8 +80,8 @@ output (subst:substs) = do  let x = pretty subst
                             if (y == ';') then
                               output substs
                               else return()
-                            
-setStrat :: String -> REPLState -> IO()                
+
+setStrat :: String -> REPLState -> IO()
 setStrat strat (REPLState prog st) = case strat of
                       "bfs" -> do putStrLn (stratS1 ++ "breadth" ++ stratS2)
                                   query (REPLState prog bfs)
