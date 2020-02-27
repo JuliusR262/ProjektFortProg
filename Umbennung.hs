@@ -64,30 +64,3 @@ renameSWild (t:ts) v False          = let (tt,b)  = renameSWild [t] v False
                                       ((tt++tts),bs)
 renameSWild ts _ b                  = (ts,b)
 
-
-
-{-
-
-rename :: Rule -> Forbidden -> Rule
-rename (Rule r rs) vs = let   (t:ts) = renameWild (r:rs) []
-                              (Rule x xs) = (Rule t ts)
-                              substi = mStoSubst (buildSubst (allVars(Rule x xs)) vs emptyMS) in
-                        Rule (apply substi x) (map (apply substi) xs)
-
-buildSubst :: [VarName] -> Forbidden -> MyState -> MyState
-buildSubst [] _ st        = st
-buildSubst (v:vs) fbs st  = if((getVar v st) == Nothing) then
-                              buildSubst vs fbs (expandState st v (getUnusedVF st fbs))
-                            else buildSubst vs fbs st
-
--}
-
-
-
-
-
-
-
-
-
-
