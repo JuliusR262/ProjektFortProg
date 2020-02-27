@@ -54,23 +54,6 @@ dfstest5 = intercalate ", " (map (pretty) (solve dfs progtest goaltest5))
 bfstest  = intercalate ", " (map (pretty) (solve bfs progtest goaltest))
 bfstest2 = intercalate ", " (map (pretty) (solve bfs progtest goaltest2))
 
-progtestsss   = (parseFile "append.pl") :: IO (Either String Prog)
-appendgoal   = (parse "append(X,Y,[1,2]).") :: Either String Goal
-
--- append([],L,L).
--- append([E|R],L,[E|RL]) :- append(R,L,RL).
-
-
-appendtest = do x <- (parseFile "append.pl") :: IO (Either String Prog)
-                let y = appendgoal
-                let z = (intercalate ", " (map (pretty) (solve bfs (fromRight (Prog []) x) (fromRight (Goal []) y))))
-                putStrLn z
-
-appendtest2 = do x <- (parseFile "append.pl") :: IO (Either String Prog)
-                 let y = appendgoal
-                 let z =  pretty (sld (fromRight (Prog []) x) (fromRight (Goal []) y))
-                 putStrLn z
-
 
 progtestsss   = (parseFile "append.pl") :: IO (Either String Prog)
 goaltestsss2   = (parse "append(_,_,[1,2]).") :: Either String Goal
