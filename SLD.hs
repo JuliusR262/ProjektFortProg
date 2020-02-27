@@ -31,7 +31,7 @@ findRules (Prog ((Rule (Comb cName1 cTerm1) rTerms ):xs)) (Comb cName2 cTerm2)
 findRules _ _ = error "Invalid Term"
 
 sld :: Prog -> Goal -> SLDTree
-sld prog (Goal ts) = sld' prog (Goal (renameWild ts [])) []--(allVars goal)
+sld prog (Goal ts) = sld' prog (Goal (renameWild ts (allVars (Goal ts)))) []--(allVars goal)
 
 
 sld' :: Prog -> Goal -> Forbidden -> SLDTree

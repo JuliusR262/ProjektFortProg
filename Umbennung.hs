@@ -11,7 +11,8 @@ type Forbidden = [VarName]
 
 getUnusedV :: Forbidden -> VarName
 getUnusedV s = head( [fvvName | fvvName <- freshVars
-                              , not(elem fvvName s)] )
+                              , not(elem fvvName s)
+                              , not(elem ('_':fvvName) s)] )
 
 getUnusedVF :: MyState -> Forbidden -> VarName
 getUnusedVF s fbs = head( [fvvName | fvvName <- freshVars
