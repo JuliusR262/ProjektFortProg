@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 module SLD (Strategy, dfs, bfs, solve, sld) where
+=======
+module SLD (Strategy, dfs, bfs, solve,sld) where
+>>>>>>> 36012de8ff9cd2831bb14ae2b6c029a421ae812b
 
 import Data.List  (intercalate)
 import Data.Maybe (isJust, fromJust)
@@ -35,7 +39,7 @@ findRules (Prog ((Rule (Comb cName1 cTerm1) rTerms ):xs)) (Comb cName2 cTerm2)
 findRules _ _ = error "Invalid Term"
 
 sld :: Prog -> Goal -> SLDTree
-sld prog goal = sld' prog goal (allVars goal)
+sld prog (Goal ts) = sld' prog (Goal (renameWild ts (allVars (Goal ts)))) []--(allVars goal)
 
 
 sld' :: Prog -> Goal -> Forbidden -> SLDTree
@@ -89,7 +93,7 @@ progtest = Prog [ (Rule (Comb "p" [Var "X", Var "Z"]) [(Comb "q" [Var "X", Var "
 
 
 solve :: Strategy -> Prog -> Goal -> [Subst]
-solve stgy prog goal = map (restrictTo (allVars goal) ) (stgy (sld prog goal))
+solve stgy prog goal =  map (restrictTo (allVars goal) ) (stgy (sld prog goal))
 
 
 dfs :: Strategy
