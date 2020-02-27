@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 module SLD (Strategy, dfs, bfs, solve, sld) where
-=======
-module SLD (Strategy, dfs, bfs, solve,sld) where
->>>>>>> 36012de8ff9cd2831bb14ae2b6c029a421ae812b
 
 import Data.List  (intercalate)
 import Data.Maybe (isJust, fromJust)
