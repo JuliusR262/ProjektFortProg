@@ -31,7 +31,7 @@ findRules (Prog ((Rule (Comb cName1 cTerm1) rTerms ):xs)) (Comb cName2 cTerm2)
 findRules _ _ = error "Invalid Term"
 
 sld :: Prog -> Goal -> SLDTree
-sld prog (Goal ts) = sld' prog (Goal (renameWild ts (allVars (Goal ts)))) []--(allVars goal)
+sld prog goal = sld' prog goal []--(allVars goal)
 
 
 sld' :: Prog -> Goal -> Forbidden -> SLDTree
@@ -46,7 +46,8 @@ sld' (Prog rs) (Goal ts) fb =
                                           let fb' = fb ++ (allVars subst)]
 
 solve :: Strategy -> Prog -> Goal -> [Subst]
-solve stgy prog goal =  map (restrictTo (allVars goal) ) (stgy (sld prog goal))
+solve stgy prog (Goal ts) =  let renamedGoal = (Goal (renameWild ts (allVars (Goal ts))))in 
+                             map (restrictTo (allVars (Goal ts)) ) (stgy (sld prog renamedGoal))
 
 
 dfs :: Strategy
