@@ -6,12 +6,17 @@ import Type
 import Unifikation
 import Vars
 
+import System.Console.ANSI
+
 -- Prog = Loaded program, Strategy = SLD tree traversal strategy
 data REPLState = REPLState Prog Strategy
 
 repl :: IO ()
 repl = do
+  setSGR [SetColor Background Vivid Blue]
   putStrLn "Welcome!\nType \":h\" for help."
+  setSGR [Reset]
+  putStrLn "Testest"
   repl' (REPLState (Prog []) dfs)
 
 repl' :: REPLState -> IO ()
@@ -32,7 +37,7 @@ helpMsg = "Commands available from the prompt:" ++
 cmdNotFoundMsg :: String
 cmdNotFoundMsg = "Command not found! Type :h for help."
 
-loadProg progFile =
+loadProg progFile = Prog []
 
 selectStrat _ = dfs
 evalGoal _ = do putStrLn "Goal."

@@ -1,3 +1,5 @@
 - Ist die Reihenfolge von dem Tupel von ds wichtig oder kann die Variable immer an erste Stelle?
 
 - Sollen bei allVars keine Duplikate vorkommen?
+
+- Wieso wird beim Styleguide gesagt, dass vor where nur ein Leerzeichen kommt wenn das sowohl in Parser.hs als auch weiter unten im Styleguide nicht beachtet wird?

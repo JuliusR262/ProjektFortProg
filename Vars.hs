@@ -2,14 +2,15 @@ module Vars (Vars, allVars, freshVars) where
 
 import Type
 
+-- | Returns a list of all variables inside a data structure.
 class Vars a where
     allVars :: a -> [VarName]
 
--- Infinite list containing internal prolog variables
+-- | Infinite list containing internally used prolog variables.
 freshVars :: [VarName]
 freshVars =  (freshVars' 0)
 
--- 
+--
 freshVars' :: Int -> [VarName]
 freshVars' x = ('_' : (show x)) : (freshVars' (x+1))
 
