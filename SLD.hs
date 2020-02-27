@@ -2,16 +2,14 @@ module SLD (Strategy, dfs, bfs, solve, sld) where
 
 import Data.List  (intercalate)
 import Data.Maybe (isJust, fromJust)
-
-import Data.Either
-
+import Data.Either()
+import Parser()
 import Substitution
 import Type
 import Umbennung
 import Unifikation
 import Vars
 
-import Parser
 
 data SLDTree = SLDT Goal [(Subst, SLDTree)]
   deriving Show

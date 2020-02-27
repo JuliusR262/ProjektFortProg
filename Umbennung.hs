@@ -1,6 +1,6 @@
 module Umbennung (rename,renameWild,Forbidden) where
 
-import Pretty
+import Pretty()
 import Substitution
 import Type
 import Vars
