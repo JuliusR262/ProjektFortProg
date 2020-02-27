@@ -70,8 +70,7 @@ checkEmpty substs = case substs of
 
 
 output []             = do  putStrLn "No more solutions."
-output (subst:substs) = do  putStrLn "IN OUTPUT"
-                            let x = pretty subst
+output (subst:substs) = do  let x = pretty subst
                             if(x == "{}") then
                               putStr "true"
                               else putStr x
