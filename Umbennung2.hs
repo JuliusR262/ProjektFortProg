@@ -32,13 +32,13 @@ mStoSubst ms =let (vs,fvs) = unzip ms in
               Subst (zip vs (map (\x -> Var x) fvs))
 
 rename :: Forbidden -> Rule -> Rule
-rename vs (Rule r rs) = let   (Rule x xs) = (Rule r rs)
-                              rls = allVars (Rule x xs)
-                              vs' = rls ++ vs
-                              substi = mStoSubst (buildSubst (filter (/= "_") rls) vs' emptyMS) 
-                              (Rule p ps) = Rule (apply substi x) (map (apply substi) xs) 
-                              (t:ts) = renameWild (p:ps) [] in
-                              (Rule t ts)
+rename vs (Rule r rs) = let (Rule x xs) = (Rule r rs)
+                            rls = allVars (Rule x xs)
+                            vs' = rls ++ vs
+                            substi = mStoSubst (buildSubst (filter (/= "_") rls) vs' emptyMS) 
+                            (Rule p ps) = Rule (apply substi x) (map (apply substi) xs) 
+                            (t:ts) = renameWild (p:ps) [] in
+                            (Rule t ts)
                               
 
 buildSubst :: [VarName] -> Forbidden -> MyState -> MyState

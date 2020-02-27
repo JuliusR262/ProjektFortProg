@@ -1,7 +1,7 @@
-module SLD (Strategy, dfs, bfs, solve, sld) where
+module SLD (Strategy, dfs, bfs, sld, solve) where
 
 import Data.List  (intercalate)
-import Data.Maybe (isJust, fromJust)
+import Data.Maybe (isJust, fromJust, catMaybes)
 import Data.Either()
 import Parser()
 import Substitution
@@ -9,6 +9,7 @@ import Type
 import Umbennung
 import Unifikation
 import Vars
+import Debug.Trace
 
 
 data SLDTree = SLDT Goal [(Subst, SLDTree)]
@@ -33,24 +34,19 @@ findRules (Prog ((Rule (Comb cName1 cTerm1) rTerms ):xs)) (Comb cName2 cTerm2)
 findRules _ _ = error "Invalid Term"
 
 sld :: Prog -> Goal -> SLDTree
-sld prog goal = sld' prog goal []--(allVars goal)
-
-
-sld' :: Prog -> Goal -> Forbidden -> SLDTree
-sld' _ (Goal []) _ = SLDT (Goal []) []
-sld' (Prog rs) (Goal ts) fb =
-  SLDT (Goal ts) [ (subst, ((sld' (Prog rs) newGoal fb'))) |
-                                          (Rule renamedRT renamedRTS) <- map ((flip rename) fb) (findRules (Prog rs) (head ts)),
-                                          let maybeSubst = unify (head ts) renamedRT,
-                                          isJust maybeSubst,
-                                          let subst = fromJust maybeSubst,
-                                          let newGoal =  Goal (map (apply subst) (renamedRTS ++ (tail ts))),
-                                          let fb' = fb ++ (allVars subst)]
+sld prog goal = sld' prog goal (allVars goal)
+  where 
+    sld' (Prog _ )  g@(Goal [])     _  = SLDT g []
+    sld' (Prog [])  g               _  = SLDT g []
+    sld' p@(Prog rs) g@(Goal (t:ts)) vs = 
+      let rs' = map (rename (vs ++ (allVars g))) rs
+          ts' = map (\(Rule l r) -> case unify t l of 
+                                      Just s  -> Just $ (s, sld' prog (Goal $ map (apply s) (r++ts)) (vs ++ allVars s ++ allVars g))
+                                      Nothing -> Nothing) rs'
+      in SLDT g (catMaybes ts')
 
 solve :: Strategy -> Prog -> Goal -> [Subst]
-solve stgy (Prog rs) (Goal ts) =  let renamedGoal = (Goal (renameWild ts (allVars (Goal ts))))
-                                      renamedProg = Prog (( map ((flip renameWildRule) (allVars (Prog rs))) rs ))
-                                  in map (restrictTo (allVars (Goal ts)) ) (stgy (sld renamedProg renamedGoal))
+solve stgy (Prog rs) (Goal ts) =  map (restrictTo (allVars (Goal ts))) (stgy (sld (Prog rs) (Goal ts)))
 
 
 dfs :: Strategy

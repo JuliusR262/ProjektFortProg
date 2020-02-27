@@ -3,3 +3,9 @@
 - Sollen bei allVars keine Duplikate vorkommen?
 
 - Wieso wird beim Styleguide gesagt, dass vor where nur ein Leerzeichen kommt wenn das sowohl in Parser.hs als auch weiter unten im Styleguide nicht beachtet wird?
+
+- Ist unser DFS ok
+
+- Wie kann man die Backspaces richtig formatieren in der Konsole auf Linux mit Haskell ghci
+
+- Ist es ok true und false auszugeben

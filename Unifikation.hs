@@ -1,6 +1,7 @@
 module Unifikation (ds, unify) where
 
 import Type
+import Vars
 import Substitution
 
 ds :: Term -> Term -> Maybe (Term, Term)
@@ -24,11 +25,16 @@ ds t1 t2 =
 
 
 -- Liefert den allgemeinsten Unifikator für zwei Terme, falls dieser existiert.
-unify :: Term -> Term -> Maybe Subst
+--unify :: Term -> Term -> Maybe Subst
+--unify t1 t2 = case ds t1 t2 of 
+--  Nothing -> Just 
+ 
+
 unify term1 term2 = unify' term1 term2 empty
 
 unify' :: Term -> Term -> Subst -> Maybe Subst
 unify' t1 t2 sigma = case (ds (apply sigma t1) (apply sigma t2) ) of
   Nothing -> Just sigma
   Just ((Comb _ _), _) -> Nothing
-  Just ((Var v), t) -> unify' t1 t2 ((single v t) `compose` sigma)
+  Just ((Var v), t)    -> if elem v (allVars t) then Nothing
+                                                else unify' t1 t2 ((single v t) `compose` sigma)

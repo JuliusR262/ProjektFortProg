@@ -7,6 +7,7 @@ import Data.List()
 import Pretty()
 import Substitution
 import Util
+import System.IO
 
 header,string,stratS1,stratS2,stratSF,help :: String
 header = unlines ["Welcome!" ,
@@ -28,8 +29,10 @@ help = unlines
 data REPLState = REPLState Prog Strategy
 
 main :: IO()
-main = do putStr header
-          query (REPLState (Prog []) dfs)
+main = do
+  hSetBuffering stdin LineBuffering  
+  putStr header
+  query (REPLState (Prog []) dfs)
 
 query :: REPLState -> IO()
 query rst = do  putStr string
