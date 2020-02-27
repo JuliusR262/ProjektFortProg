@@ -9,29 +9,25 @@ class Vars a where
 -- | Infinite list containing internally used prolog variables.
 freshVars :: [VarName]
 freshVars =  (freshVars' 0)
+  where
+    freshVars' :: Int -> [VarName]
+    freshVars' x = ('_' : (show x)) : (freshVars' (x+1))
 
---
-freshVars' :: Int -> [VarName]
-freshVars' x = ('_' : (show x)) : (freshVars' (x+1))
-
--- instances for Term, Rule, Prog, Goal
---   to implement allVars
---  which all returns a list of names of the variables inside
+-- | Instance of Vars for Term.
 instance Vars (Term) where
-  -- concat recursivly all names of variables to one list together
   allVars (Var vName)         = [vName]
   allVars (Comb _ [])         = []
   allVars (Comb _ (x:xs))     = (allVars x) ++ (allVars (Comb "" xs))
 
+-- | Instance of Vars for Rule.
 instance Vars (Rule) where
-  -- build on allVars of Term because Rule Term [Term]
   allVars (Rule x xs)         = (allVars x) ++ (allVars (Comb "" xs))
-
+  
+-- | Instance of Vars for Prog.
 instance Vars (Prog) where
-  -- build on allVars of Rule because Prog [Rule]
   allVars (Prog [])           = []
   allVars (Prog (x:xs))       = (allVars x) ++ (allVars (Prog xs))
 
+-- | Instance of Vars for Goal.
 instance Vars (Goal) where
-  -- build on allVars of Term because Goal [Term]
   allVars (Goal xs)           = allVars (Comb "" xs)

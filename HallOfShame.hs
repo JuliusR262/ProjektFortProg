@@ -116,6 +116,16 @@ compose (Subst s2) (Subst s1) =
 
 -}
 
+------------- SLD ------------------
+
+{--
+findRules :: Prog -> Term -> [Rule]
+findRules (Prog []) _ = []
+findRules (Prog ((Rule (Comb cName1 cTerm1) rTerms ):xs)) (Comb cName2 cTerm2)
+  | cName1 == cName2 = (Rule (Comb cName1 cTerm1) rTerms) : (findRules (Prog xs) (Comb cName2 cTerm2))
+  | otherwise = findRules (Prog xs) (Comb cName2 cTerm2)
+findRules _ _ = error "Invalid Term"
+--}
 
 
 ----------Umbennung ----------

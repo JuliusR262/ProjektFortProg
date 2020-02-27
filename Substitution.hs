@@ -15,27 +15,27 @@ import Pretty
 import Type
 import Vars
 
--- Data type for substitutions
+-- Data type for substitutions.
 data Subst = Subst [(VarName, Term)]
   deriving Show
 
--- Pretty-inztance for Substitutions
+-- Pretty instance for substitutions.
 instance Pretty Subst where
     pretty subst = "{" ++ (intercalate ", " (prettyHelp subst))  ++ "}"
         where prettyHelp :: Subst -> [String]
               prettyHelp (Subst []) = []
               prettyHelp (Subst ((svName, sTerm):xs)) = (svName ++ " -> " ++ (pretty sTerm)) : (prettyHelp (Subst xs))
 
--- Vars-Instanz für Substitutionen
+-- Vars instance for substitutions.
 instance Vars Subst where
     allVars (Subst []) = []
     allVars (Subst ((svName, sTerm):xs)) = svName : (allVars sTerm) ++ allVars (Subst xs)
 
--- The empty substitution
+-- The empty substitution.
 empty :: Subst
 empty = Subst []
 
--- One single substitution
+-- A substitution that only changes one variable into a different term.
 single :: VarName -> Term -> Subst
 single vName term = Subst [(vName, term)]
 
@@ -54,5 +54,7 @@ compose (Subst s2) (Subst s1) =
   let s3 = [ (n2, t2) | (n2, t2) <- s2, isNothing (lookup n2 s1)]
   in Subst (s3 ++ [(v1, (apply (Subst s3) t1)) | (v1, t1) <- s1])
 
+-- Restricts a substitution to only contain tuples with variables
+-- contained in the list of variable names.
 restrictTo :: [VarName] -> Subst -> Subst
 restrictTo xs (Subst ts1) = Subst [(v2Name,t) | v1Name <- xs, (v2Name, t) <- ts1, v1Name == v2Name]

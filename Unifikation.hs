@@ -4,6 +4,8 @@ import Type
 import Vars
 import Substitution
 
+-- Computes the disagreement set of two terms and returns 
+-- it, or returns 'Nothing' if no disagreement was found.
 ds :: Term -> Term -> Maybe (Term, Term)
 ds t1 t2 =
   case (t1, t2) of
@@ -23,18 +25,15 @@ ds t1 t2 =
             Nothing     -> dsAll ts
             Just result -> Just result
 
-
--- Liefert den allgemeinsten Unifikator für zwei Terme, falls dieser existiert.
---unify :: Term -> Term -> Maybe Subst
---unify t1 t2 = case ds t1 t2 of 
---  Nothing -> Just 
- 
-
+-- Computes the substitution needed to unify the given terms and return it,
+-- or returns 'Nothing' if they can't be unified.
+unify :: Term -> Term -> Maybe Subst
 unify term1 term2 = unify' term1 term2 empty
+  where
+    unify' :: Term -> Term -> Subst -> Maybe Subst
+    unify' t1 t2 sigma = case (ds (apply sigma t1) (apply sigma t2) ) of
+      Nothing -> Just sigma
+      Just ((Comb _ _), _) -> Nothing
+      Just ((Var v), t)    -> if elem v (allVars t) then Nothing
+                                                    else unify' t1 t2 ((single v t) `compose` sigma)
 
-unify' :: Term -> Term -> Subst -> Maybe Subst
-unify' t1 t2 sigma = case (ds (apply sigma t1) (apply sigma t2) ) of
-  Nothing -> Just sigma
-  Just ((Comb _ _), _) -> Nothing
-  Just ((Var v), t)    -> if elem v (allVars t) then Nothing
-                                                else unify' t1 t2 ((single v t) `compose` sigma)

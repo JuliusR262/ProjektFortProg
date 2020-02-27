@@ -7,23 +7,25 @@ import Type
 class Pretty a where
   pretty :: a -> String
 
--- instance pretty Maybe
+-- Instance of pretty for Maybe.
 instance Pretty a => Pretty (Maybe a) where
   pretty Nothing = ""
   pretty (Just x)  = pretty x
 
+-- Turns a Goal into a pretty String.
 instance Pretty (Goal) where
   pretty (Goal ts) = intercalate ", " (map pretty ts)
 
+-- Turns a Rule into a pretty String.
 instance Pretty (Rule) where
   pretty (Rule t []) = pretty t ++ "."
   pretty (Rule t ts) = pretty t ++ " :- " ++ intercalate ", " (map pretty ts)
 
+-- Turns a Prog into a pretty String.
 instance Pretty (Prog) where
   pretty (Prog rs) = intercalate "\n " (map pretty rs)
 
--- instance pretty Term
--- makes a Term more readable
+-- Turns a Term into a pretty String.
 instance Pretty (Term) where
   pretty (Var vName)          = vName
   pretty (Comb cName [])      = cName

@@ -9,7 +9,9 @@ import Substitution
 import Util
 import System.IO
 
-header,string,stratS1,stratS2,stratSF,help :: String
+header, string, stratS1, stratS2, stratSF, help :: String
+
+-- Welcome message.
 header = unlines ["Welcome!" ,
                  ("Type " ++ ('"' : ":h") ++ ('"' : " for help."))]
 string = "?- "
@@ -17,6 +19,7 @@ stratS1 = "Strategy set to "
 stratS2 = "-first search."
 stratSF = "Strategy set failed! set to old strategy!"
 
+-- Help message.
 help = unlines
     ["Commands available from the prompt:",
     " <goal>      Solves/proves the specified goal.",
@@ -26,27 +29,33 @@ help = unlines
     " :s <strat>  Sets the specified search strategy",
     "             where <strat> is one of 'dfs', 'bfs', or 'iddfs'."]
 
+-- The state of the interactive Prolog environment.
+-- Stores a program and a SLD-tree evaluation strategy.
 data REPLState = REPLState Prog Strategy
 
+-- Main function. Starts the interactive Prolog environment.
 main :: IO()
 main = do
   hSetBuffering stdin LineBuffering  
   putStr header
   query (REPLState (Prog []) dfs)
 
+-- User input loop.
 query :: REPLState -> IO()
 query rst = do  putStr string
                 x <- getLine
                 process x rst
 
+-- Process user input.
 process :: String -> REPLState -> IO()
-process x rst = do case filter (/=' ') x of
+process x rst@(REPLState p st) = 
+  do case filter (/=' ') x of
                     ""              -> query rst
                     ":q"            -> return()
                     ":h"            -> do putStr help
+                                          query rst
                     (':':'l':_)     -> do y <- (parseFile (tail (tail x)))
                                                   :: IO (Either String Prog)
-                                          let (REPLState p st) = rst
                                           if(isRight y) then
                                             putStrLn "Loaded."
                                             else putStrLn ("Failed Loading.")
@@ -54,18 +63,23 @@ process x rst = do case filter (/=' ') x of
                     (':':'s':strat) -> setStrat strat rst
                     _               -> do let y =(parse x) :: Either String Goal
                                           if(isRight y) then do
-                                            let (REPLState prog st) = rst
-                                            let substs = solve st prog (
+                                            let substs = solve st p (
                                                     fromRight' (Goal []) y)
                                             checkEmpty substs
                                             else putStrLn "Failed loading Goal!"
                                           query rst
 
+
 checkEmpty,output :: [Subst] -> IO()
+
+-- Checks if a list of solutions is empty. If it is, terminate with 'false'.
+-- If not, evaluate the solutions.
 checkEmpty substs = case substs of
                          [] ->  putStrLn "false"
                          _  ->  output substs
 
+-- Evaluate the contents of a solution list. Print 'true' for every empty
+-- solution. Otherwise print the solution.
 output []             = do putStrLn "No more solutions."
 output (subst:substs) = do case subst of 
                              Subst [] -> putStr "true"
@@ -76,6 +90,8 @@ output (subst:substs) = do case subst of
                              output substs
                              else return()
 
+-- Tries changing the strategy of a state and queries for new
+-- user-input.
 setStrat :: String -> REPLState -> IO()
 setStrat strat (REPLState prog st) = case strat of
                       "bfs" -> do putStrLn (stratS1 ++ "breadth" ++ stratS2)

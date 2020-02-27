@@ -5,58 +5,74 @@ import Substitution
 import Type
 import Vars
 
-type MyState = [(VarName, VarName)]
+type VarState = [(VarName, VarName)]
 
 type Forbidden = [VarName]
 
+-- Returns a variable name out of 'freshVars' that 
+-- is not contained in a given variable list.
 getUnusedV :: Forbidden -> VarName
 getUnusedV s = head( [fvvName | fvvName <- freshVars
                               , not(elem fvvName s)
                               , not(elem ('_':fvvName) s)] )
 
-getUnusedVF :: MyState -> Forbidden -> VarName
+-- Returns a variable name out of 'freshVars' that
+-- is neither contained in a list of forbidden variables,
+-- nor in the right side of the state's tuples.
+getUnusedVF :: VarState -> Forbidden -> VarName
 getUnusedVF s fbs = head( [fvvName | fvvName <- freshVars
-                              , not(elem fvvName (snd(unzip s))), not (elem fvvName fbs)] )
+                                   , not(elem fvvName (snd(unzip s)))
+                                   , not (elem fvvName fbs)] )
 
-expandState :: MyState -> VarName -> VarName -> MyState
+-- Includes a new tuple of variable substitutions into a state.
+expandState :: VarState -> VarName -> VarName -> VarState
 expandState state newVar assignedVar = (newVar, assignedVar) : state
 
-getVar :: VarName -> MyState -> Maybe VarName
+-- Alias for lookup.
+getVar :: VarName -> VarState -> Maybe VarName
 getVar v s  = lookup v s
 
-emptyMS :: MyState
-emptyMS = []
+-- Returns an empty 'VarState'.
+emptyVS :: VarState
+emptyVS = []
 
-mStoSubst :: MyState -> Subst
-mStoSubst ms =let (vs,fvs) = unzip ms in
-              Subst (zip vs (map (\x -> Var x) fvs))
+-- Converts a 'VarState' into a substitution.
+mStoSubst :: VarState -> Subst
+mStoSubst ms = let (vs,fvs) = unzip ms 
+               in Subst (zip vs (map (\x -> Var x) fvs))
 
+-- Renames a rule by not using any variable names from
+-- a given variable list. This also includes anonymous variables.
 rename :: Forbidden -> Rule -> Rule
-rename vs (Rule r rs) = let   (Rule x xs) = (Rule r rs)
-                              rls = allVars (Rule x xs)
+rename vs (Rule r rs) = let   rls = allVars (Rule r rs)
                               vs' = rls ++ vs
-                              substi = mStoSubst (buildSubst (filter (/= "_") rls) vs' emptyMS) 
-                              (Rule p ps) = Rule (apply substi x) (map (apply substi) xs) 
+                              substi = mStoSubst (buildSubst (filter (/= "_") rls) vs' emptyVS) 
+                              (Rule p ps) = Rule (apply substi r) (map (apply substi) rs) 
                               (t:ts) = renameWild (p:ps) [] in
                               (Rule t ts)
                               
-
-buildSubst :: [VarName] -> Forbidden -> MyState -> MyState
-buildSubst [] _ st        = st
+-- Expands a state using a list of forbidden variables and
+-- a list of new variables by finding new 'freshVars' for
+-- every variable that is not forbidden.
+buildSubst :: [VarName] -> Forbidden -> VarState -> VarState
+buildSubst []     _   st  = st
 buildSubst (v:vs) fbs st  = if((getVar v st) == Nothing) then
                               buildSubst vs fbs (expandState st v (getUnusedVF st fbs))
                             else buildSubst vs fbs st
 
+-- Renames anonymous variables inside a rule.
 renameWildRule :: Rule -> Forbidden -> Rule
 renameWildRule (Rule t ts) vs = let tts = renameWild (t:ts) vs
                                 in Rule (head tts) (tail tts)
 
+-- Renames anonymous variables.
 renameWild :: [Term] -> Forbidden -> [Term]
 renameWild ts vs =  if(not (elem "_" (allVars (Goal ts)))) then
                       ts
                     else let  v = getUnusedV vs
-                              (tts,_) = renameSWild ts v False in
-                      renameWild tts (v:vs)
+                              (tts,_) = renameSWild ts v False 
+                         in renameWild tts (v:vs)
+
 
 renameSWild :: [Term] -> VarName -> Bool -> ([Term],Bool)
 renameSWild [(Var "_")] v False     = ([Var ('_':v)],True)
