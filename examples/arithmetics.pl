@@ -1,3 +1,5 @@
+=(X,X).
+
 factorial(0, 1).
 factorial(N, F) :- >(N, 0), is(N1, -(N, 1)), factorial(N1, F1), is(F, *(F1, N)).
 
@@ -15,6 +17,9 @@ factorial(N, F) :- >(N, 0), is(N1, -(N, 1)), factorial(N1, F1), is(F, *(F1, N)).
 
 % Test query: "=(+(21,21),42).".
 % Expected result: No solutions.
+
+% Test query: "=(42,42).".
+% Expected result: One solution, "{}".
 
 % Test query: "is(_,mod(10,0)).".
 % Expected result: No solutions.
