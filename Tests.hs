@@ -54,8 +54,6 @@ dfstest5 = intercalate ", " (map (pretty) (solve dfs progtest goaltest5))
 bfstest  = intercalate ", " (map (pretty) (solve bfs progtest goaltest))
 bfstest2 = intercalate ", " (map (pretty) (solve bfs progtest goaltest2))
 
-
-<<<<<<< HEAD
 progtestsss   = (parseFile "append.pl") :: IO (Either String Prog)
 appendgoal   = (parse "append(X,Y,[1,2]).") :: Either String Goal
 
@@ -72,7 +70,6 @@ appendtest2 = do x <- (parseFile "append.pl") :: IO (Either String Prog)
                  let y = appendgoal
                  let z =  pretty (sld (fromRight (Prog []) x) (fromRight (Goal []) y))
                  putStrLn z
-=======
 
 
 progtestsss   = (parseFile "append.pl") :: IO (Either String Prog)
@@ -92,8 +89,8 @@ appendtest = do x <- (parseFile "append.pl") :: IO (Either String Prog)
                 let p = pretty (sld (fromRight (Prog []) x) (fromRight (Goal []) a))
                 putStrLn q
                 putStrLn p
-                
-                
+
+
 appendtest2 = do  x <- (parseFile "append.pl") :: IO (Either String Prog)
                   let y = goaltestsss1
                   let a = goaltestsss2
@@ -101,7 +98,7 @@ appendtest2 = do  x <- (parseFile "append.pl") :: IO (Either String Prog)
                   let b = (intercalate ", " (map (pretty) (solve bfs (fromRight (Prog []) x) (fromRight (Goal []) a))))
                   putStrLn z
                   putStrLn b
-                
+
 
 
 
@@ -126,4 +123,3 @@ appendtest2 = do  x <- (parseFile "append.pl") :: IO (Either String Prog)
 
 
 --appendprog = fromRight (Prog []) ((parseFile "append.pl") :: IO (Either String Prog))
->>>>>>> 36012de8ff9cd2831bb14ae2b6c029a421ae812b
