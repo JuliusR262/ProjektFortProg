@@ -19,7 +19,8 @@
 --composit = subst2 `compose` subst1
 
 
-
+--compsubst = (single "A" (Var "B"))
+-- comptest = compsubst `compose` compsubst
 
 
 
